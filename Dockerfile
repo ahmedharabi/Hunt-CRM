@@ -22,6 +22,7 @@ ENV HUNT_STANDALONE=1
 RUN npm run build
 
 FROM base AS runner
+LABEL org.opencontainers.image.source=https://github.com/ahmedharabi/Hunt-CRM
 ENV NODE_ENV=production \
     HOSTNAME=0.0.0.0 \
     PORT=3000 \
