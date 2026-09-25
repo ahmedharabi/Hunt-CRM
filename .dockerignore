@@ -1,0 +1,13 @@
+.git
+.github
+.next
+node_modules
+data
+docs
+tests
+electron
+*.tsbuildinfo
+.env*
+Dockerfile
+compose.yaml
+plan.md

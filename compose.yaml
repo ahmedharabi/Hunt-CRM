@@ -1,0 +1,15 @@
+services:
+  hunt:
+    image: ghcr.io/ahmedharabi/hunt-crm:latest
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - hunt-data:/data
+    environment:
+      # Set a password to require login (recommended when exposed on a network).
+      APP_PASSWORD: ${APP_PASSWORD:-}
+    restart: unless-stopped
+
+volumes:
+  hunt-data:

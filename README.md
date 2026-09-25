@@ -102,6 +102,15 @@ Search for "Hunt" in your launcher and pin it to your dock. It opens in its own 
 
 The Electron shell starts Hunt's production server on a free local port using your system Node, so the native SQLite module never needs rebuilding for Electron.
 
+### Docker
+
+```bash
+docker compose up -d --build                     # http://localhost:3000
+APP_PASSWORD=pick-something-long docker compose up -d --build   # with a login screen
+```
+
+Data is stored in the `hunt-data` volume (mounted at `/data`), so rebuilding or updating the image keeps it. Migrations run automatically on start.
+
 ### On your phone
 
 ```bash

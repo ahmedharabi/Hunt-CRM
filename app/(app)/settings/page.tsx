@@ -12,7 +12,9 @@ export const metadata = { title: "Settings" };
 
 export default function SettingsPage() {
   const hasSample = !!getDb().$client.prepare("select 1 from companies where is_seed = 1 and deleted_at is null limit 1").get();
-  const relDir = `./${path.relative(process.cwd(), DATA_DIR) || "data"}`;
+  const rel = path.relative(process.cwd(), DATA_DIR);
+  // Show a relative path for the default ./data, the absolute one for e.g. /data in Docker.
+  const relDir = rel && !rel.startsWith("..") && !path.isAbsolute(rel) ? `./${rel}` : DATA_DIR;
   return (
     <Page className="max-w-4xl">
       <PageHeader title="Settings" description="Everything is stored locally in one SQLite file." />
