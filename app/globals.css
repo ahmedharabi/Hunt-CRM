@@ -1,26 +1,229 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-heading: var(--font-sans);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* The one brand accent. Use sparingly: active state, focus, streaks, primary CTA. */
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-brand-soft: var(--brand-soft);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Pipeline statuses — same hue everywhere: badges, Kanban, charts. */
+  --color-status-wishlist: var(--status-wishlist);
+  --color-status-applied: var(--status-applied);
+  --color-status-screening: var(--status-screening);
+  --color-status-interviewing: var(--status-interviewing);
+  --color-status-offer: var(--status-offer);
+  --color-status-accepted: var(--status-accepted);
+  --color-status-rejected: var(--status-rejected);
+  --color-status-ghosted: var(--status-ghosted);
+  --color-status-withdrawn: var(--status-withdrawn);
+
+  /* Activity types. */
+  --color-act-application: var(--act-application);
+  --color-act-cold_email: var(--act-cold_email);
+  --color-act-linkedin_connection: var(--act-linkedin_connection);
+  --color-act-linkedin_dm: var(--act-linkedin_dm);
+  --color-act-follow_up: var(--act-follow_up);
+  --color-act-referral_request: var(--act-referral_request);
+  --color-act-call: var(--act-call);
+  --color-act-coffee_chat: var(--act-coffee_chat);
+  --color-act-interview: var(--act-interview);
+  --color-act-note: var(--act-note);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  --radius: 0.5rem;
+
+  /* zinc, hue 286 */
+  --background: oklch(0.994 0.001 286);
+  --foreground: oklch(0.2 0.006 286);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.2 0.006 286);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.2 0.006 286);
+  --primary: oklch(0.21 0.006 286);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.965 0.002 286);
+  --secondary-foreground: oklch(0.21 0.006 286);
+  --muted: oklch(0.965 0.002 286);
+  --muted-foreground: oklch(0.52 0.012 286);
+  --accent: oklch(0.955 0.003 286);
+  --accent-foreground: oklch(0.21 0.006 286);
+  --destructive: oklch(0.577 0.215 27);
+  --border: oklch(0.915 0.004 286);
+  --input: oklch(0.9 0.004 286);
+  --ring: oklch(0.66 0.19 42);
+
+  --brand: oklch(0.645 0.2 41);
+  --brand-foreground: oklch(0.99 0.01 60);
+  --brand-soft: oklch(0.645 0.2 41 / 10%);
+
+  /* Categorical chart slots, fixed order, validated for CVD separation (dataviz validator). */
+  --chart-1: #3475d3;
+  --chart-2: #df911a;
+  --chart-3: #00987c;
+  --chart-4: #773ac1;
+  --chart-5: #ca488f;
+
+  --sidebar: oklch(0.982 0.002 286);
+  --sidebar-foreground: oklch(0.3 0.008 286);
+  --sidebar-primary: oklch(0.645 0.2 41);
+  --sidebar-primary-foreground: oklch(0.99 0 0);
+  --sidebar-accent: oklch(0.94 0.004 286);
+  --sidebar-accent-foreground: oklch(0.18 0.006 286);
+  --sidebar-border: oklch(0.925 0.004 286);
+  --sidebar-ring: oklch(0.66 0.19 42);
+
+  --status-wishlist: oklch(0.62 0.02 286);
+  --status-applied: oklch(0.57 0.15 255);
+  --status-screening: oklch(0.56 0.17 285);
+  --status-interviewing: oklch(0.55 0.18 315);
+  --status-offer: oklch(0.6 0.12 175);
+  --status-accepted: oklch(0.58 0.15 150);
+  --status-rejected: oklch(0.58 0.19 25);
+  --status-ghosted: oklch(0.55 0.01 286);
+  --status-withdrawn: oklch(0.6 0.04 70);
+
+  --act-application: oklch(0.57 0.15 255);
+  --act-cold_email: oklch(0.6 0.12 190);
+  --act-linkedin_connection: oklch(0.62 0.12 230);
+  --act-linkedin_dm: oklch(0.53 0.17 275);
+  --act-follow_up: oklch(0.68 0.14 80);
+  --act-referral_request: oklch(0.6 0.17 350);
+  --act-call: oklch(0.6 0.14 150);
+  --act-coffee_chat: oklch(0.55 0.08 55);
+  --act-interview: oklch(0.55 0.18 315);
+  --act-note: oklch(0.6 0.015 286);
+}
+
+.dark {
+  --background: oklch(0.155 0.004 286);
+  --foreground: oklch(0.95 0.002 286);
+  --card: oklch(0.185 0.005 286);
+  --card-foreground: oklch(0.95 0.002 286);
+  --popover: oklch(0.2 0.005 286);
+  --popover-foreground: oklch(0.95 0.002 286);
+  --primary: oklch(0.95 0.002 286);
+  --primary-foreground: oklch(0.2 0.006 286);
+  --secondary: oklch(0.25 0.006 286);
+  --secondary-foreground: oklch(0.95 0.002 286);
+  --muted: oklch(0.24 0.006 286);
+  --muted-foreground: oklch(0.68 0.012 286);
+  --accent: oklch(0.25 0.006 286);
+  --accent-foreground: oklch(0.96 0.002 286);
+  --destructive: oklch(0.68 0.19 24);
+  --border: oklch(1 0 0 / 8%);
+  --input: oklch(1 0 0 / 12%);
+  --ring: oklch(0.72 0.17 48);
+
+  --brand: oklch(0.72 0.17 48);
+  --brand-foreground: oklch(0.18 0.03 45);
+  --brand-soft: oklch(0.72 0.17 48 / 14%);
+
+  --chart-1: #4885df;
+  --chart-2: #cb8315;
+  --chart-3: #11a68b;
+  --chart-4: #8851d1;
+  --chart-5: #cd5394;
+
+  --sidebar: oklch(0.135 0.004 286);
+  --sidebar-foreground: oklch(0.8 0.008 286);
+  --sidebar-primary: oklch(0.72 0.17 48);
+  --sidebar-primary-foreground: oklch(0.18 0.03 45);
+  --sidebar-accent: oklch(1 0 0 / 6%);
+  --sidebar-accent-foreground: oklch(0.97 0 0);
+  --sidebar-border: oklch(1 0 0 / 7%);
+  --sidebar-ring: oklch(0.72 0.17 48);
+
+  --status-wishlist: oklch(0.7 0.02 286);
+  --status-applied: oklch(0.7 0.13 255);
+  --status-screening: oklch(0.7 0.14 285);
+  --status-interviewing: oklch(0.7 0.15 315);
+  --status-offer: oklch(0.74 0.11 175);
+  --status-accepted: oklch(0.74 0.14 150);
+  --status-rejected: oklch(0.7 0.16 25);
+  --status-ghosted: oklch(0.6 0.01 286);
+  --status-withdrawn: oklch(0.7 0.04 70);
+
+  --act-application: oklch(0.7 0.13 255);
+  --act-cold_email: oklch(0.74 0.1 190);
+  --act-linkedin_connection: oklch(0.74 0.1 230);
+  --act-linkedin_dm: oklch(0.68 0.14 275);
+  --act-follow_up: oklch(0.8 0.13 80);
+  --act-referral_request: oklch(0.72 0.14 350);
+  --act-call: oklch(0.74 0.13 150);
+  --act-coffee_chat: oklch(0.7 0.07 55);
+  --act-interview: oklch(0.7 0.15 315);
+  --act-note: oklch(0.66 0.015 286);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+    font-feature-settings: "ss01", "cv11";
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply bg-background text-foreground;
+    text-rendering: optimizeLegibility;
+  }
+  ::selection {
+    background: var(--brand-soft);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@utility tabular {
+  font-variant-numeric: tabular-nums;
 }
