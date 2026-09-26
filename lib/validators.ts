@@ -120,7 +120,7 @@ export const opportunitySchema = z.object({
   title: z.string().trim().min(1, "Role title is required").max(160),
   employmentType: z.enum(EMPLOYMENT_TYPES).default("internship"),
   workMode: optEnum(REMOTE_POLICIES),
-  location: optText(120),
+  country: optText(80),
   jobUrl: optUrl,
   source: optEnum(OPPORTUNITY_SOURCES),
   status: z.enum(OPPORTUNITY_STATUSES).default("wishlist"),
@@ -220,6 +220,7 @@ export const settingsSchema = z.object({
   ghostingThresholdDays: z.coerce.number().int().min(3, "At least 3 days").max(180),
   linkedinWeeklyConnectionLimit: z.coerce.number().int().min(1).max(1000),
   streakMode: z.enum(STREAK_MODES),
+  streakGoals: goalMap,
 });
 export type SettingsValues = z.output<typeof settingsSchema>;
 

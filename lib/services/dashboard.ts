@@ -7,6 +7,8 @@ const DAY = 86_400_000;
 
 type Counts = Partial<Record<ActivityType, number>>;
 
+export type HeatmapDay = { day: string; count: number; met: boolean; counts: Counts; companies: string[] };
+
 /** Outbound activity counts per local day and type since `since`. */
 export function countsByDay(db: DB, tz: string, since: Date): Map<string, Counts> {
   const rows = db.$client
@@ -37,6 +39,14 @@ export function dayMeetsGoal(counts: Counts | undefined, goals: DailyGoals, mode
   if (mode === "any_activity" || goalEntries.length === 0) return total(counts) > 0;
   const met = goalEntries.map(([type, goal]) => (counts?.[type] ?? 0) >= goal);
   return mode === "all_goals" ? met.every(Boolean) : met.some(Boolean);
+}
+
+export type StreakTarget = { type: ActivityType; count: number; goal: number };
+
+/** Today's progress on each streak target, so the badge can show "3/15" for each. */
+export function streakTargets(counts: Counts | undefined, goals: DailyGoals, mode: StreakMode): StreakTarget[] {
+  if (mode === "any_activity") return [];
+  return ACTIVITY_TYPES.filter((t) => (goals[t] ?? 0) > 0).map((type) => ({ type, count: counts?.[type] ?? 0, goal: goals[type]! }));
 }
 
 function shiftDay(day: string, delta: number) {
@@ -73,7 +83,13 @@ export function computeStreaks(byDay: Map<string, Counts>, today: string, goals:
     longest = Math.max(longest, run);
     prev = d;
   }
-  return { current, longest: Math.max(longest, current), todayMet: met(today) };
+  return {
+    current,
+    longest: Math.max(longest, current),
+    todayMet: met(today),
+    mode,
+    targets: streakTargets(byDay.get(today), goals, mode),
+  };
 }
 
 export type FollowUpItem = {
@@ -136,15 +152,29 @@ export function getDashboard(db: DB, settings: Settings, now = new Date()) {
   // ~6 months for the heatmap, plus a year of history for the longest streak.
   const byDay = countsByDay(db, tz, new Date(now.getTime() - 400 * DAY));
   const todayCounts = byDay.get(today) ?? {};
-  const streak = computeStreaks(byDay, today, settings.dailyGoals, settings.streakMode);
+  const streak = computeStreaks(byDay, today, settings.streakGoals, settings.streakMode);
 
   const heatmapStart = startOfWeekTz(new Date(now.getTime() - 26 * 7 * DAY), tz, settings.weekStartsOn);
-  const heatmap: { day: string; count: number; met: boolean }[] = [];
+  // Companies touched each day, for the heatmap's hover card.
+  const companiesByDay = new Map<string, string[]>();
+  const touched = db.$client
+    .prepare(
+      `select local_day(a.occurred_at, @tz) as day, c.name
+       from activities a join companies c on c.id = a.company_id
+       where a.direction = 'outbound' and a.deleted_at is null and a.occurred_at >= @since
+       group by 1, 2 order by min(a.occurred_at)`,
+    )
+    .all({ tz, since: heatmapStart.getTime() }) as { day: string; name: string }[];
+  for (const r of touched) companiesByDay.set(r.day, [...(companiesByDay.get(r.day) ?? []), r.name]);
+
+  const heatmap: HeatmapDay[] = [];
   for (let d = dayKey(heatmapStart, tz); d <= today; d = shiftDay(d, 1)) {
     heatmap.push({
       day: d,
       count: total(byDay.get(d)),
-      met: dayMeetsGoal(byDay.get(d), settings.dailyGoals, settings.streakMode),
+      met: dayMeetsGoal(byDay.get(d), settings.streakGoals, settings.streakMode),
+      counts: byDay.get(d) ?? {},
+      companies: companiesByDay.get(d) ?? [],
     });
   }
 

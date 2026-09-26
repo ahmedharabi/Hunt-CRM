@@ -108,7 +108,7 @@ export function getWeeklyReview(db: DB, settings: Settings, weekStart: string) {
     return {
       day: key,
       total: c ? Object.values(c).reduce((a, b) => a + (b ?? 0), 0) : 0,
-      met: dayMeetsGoal(c, settings.dailyGoals, settings.streakMode),
+      met: dayMeetsGoal(c, settings.streakGoals, settings.streakMode),
     };
   });
 

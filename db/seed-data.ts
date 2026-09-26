@@ -462,7 +462,7 @@ export function seed(db: DB, opts: { now?: Date; random?: number } = {}) {
             title,
             employmentType: title.startsWith("Part-time") || title.includes("Part-time") ? "part_time" : "internship",
             workMode: c.remote,
-            location: c.remote === "remote" ? "Remote (EMEA)" : c.hq,
+            country: c.country,
             jobUrl: `https://${c.domain}/careers/${title.toLowerCase().replace(/[^a-z]+/g, "-")}`,
             source,
             status,

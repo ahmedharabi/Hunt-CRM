@@ -83,6 +83,45 @@ describe("status changes", () => {
   });
 });
 
+describe("applications count toward goals and streaks", () => {
+  const applications = (opportunityId: number) =>
+    db
+      .select()
+      .from(s.activities)
+      .where(eq(s.activities.opportunityId, opportunityId))
+      .all()
+      .filter((a) => a.type === "application" && a.direction === "outbound");
+
+  it("moving to Applied outside quick-log records one application activity", () => {
+    const opp = db.insert(s.opportunities).values({ companyId, title: "SRE Intern" }).returning().get();
+    changeStatus(db, opp.id, "applied", { at: NOW });
+    changeStatus(db, opp.id, "screening");
+    const [a] = applications(opp.id);
+    expect(applications(opp.id)).toHaveLength(1);
+    expect(a).toMatchObject({ companyId, subject: "SRE Intern", channel: "company_site", outcome: "pending" });
+    expect(a.occurredAt.getTime()).toBe(NOW.getTime());
+    expect(a.followUpDueAt?.getTime()).toBe(NOW.getTime() + 10 * DAY);
+  });
+
+  it("quick-logging an application on a wishlist opportunity doesn't double count", () => {
+    const opp = db.insert(s.opportunities).values({ companyId, title: "X" }).returning().get();
+    log({ type: "application", companyId, opportunityId: opp.id });
+    expect(applications(opp.id)).toHaveLength(1);
+  });
+
+  it("walking through Applied for an interview records the application too", () => {
+    const opp = db.insert(s.opportunities).values({ companyId, title: "X" }).returning().get();
+    advanceTo(db, opp.id, "interviewing", NOW);
+    expect(applications(opp.id)).toHaveLength(1);
+  });
+
+  it("can be skipped for imported history", () => {
+    const opp = db.insert(s.opportunities).values({ companyId, title: "X" }).returning().get();
+    changeStatus(db, opp.id, "applied", { logApplication: false });
+    expect(applications(opp.id)).toHaveLength(0);
+  });
+});
+
 describe("logging activities", () => {
   it("sets follow_up_due_at from the rules and touches the contact", () => {
     const { activity } = log({ type: "cold_email", companyId, contactId });
@@ -250,8 +289,9 @@ describe("sample data stays sample data", () => {
 describe("settings", () => {
   it("accepts goal maps with zero-goal types left out", () => {
     const base = { timezone: "UTC", weekStartsOn: 1, ghostingThresholdDays: 21, linkedinWeeklyConnectionLimit: 100, streakMode: "any_goal" };
-    const v = settingsSchema.parse({ ...base, dailyGoals: {}, weeklyGoals: { application: 5 }, followUpRules: {} });
+    const v = settingsSchema.parse({ ...base, dailyGoals: {}, weeklyGoals: { application: 5 }, followUpRules: {}, streakGoals: { application: 15, cold_email: 15 } });
     expect(v.dailyGoals).toEqual({});
     expect(v.weeklyGoals).toEqual({ application: 5 });
+    expect(v.streakGoals).toEqual({ application: 15, cold_email: 15 });
   });
 });

@@ -21,6 +21,7 @@ import { cn } from "@/lib/utils";
 
 const TIMEZONES = typeof Intl.supportedValuesOf === "function" ? Intl.supportedValuesOf("timeZone") : ["Africa/Tunis", "UTC"];
 const GOAL_TYPES: ActivityType[] = ["application", "cold_email", "linkedin_dm", "linkedin_connection", "follow_up", "referral_request", "call", "coffee_chat"];
+const STREAK_TYPES: ActivityType[] = ["application", "cold_email", "linkedin_dm", "linkedin_connection", "follow_up"];
 const RULE_TYPES: ActivityType[] = [...OUTREACH_TYPES, "follow_up"];
 
 type Input_ = z.input<typeof settingsSchema>;
@@ -53,13 +54,14 @@ export function SettingsForm({ settings }: { settings: Settings }) {
       ghostingThresholdDays: settings.ghostingThresholdDays,
       linkedinWeeklyConnectionLimit: settings.linkedinWeeklyConnectionLimit,
       streakMode: settings.streakMode,
+      streakGoals: fill(settings.streakGoals),
     },
   });
 
   const onSubmit = handleSubmit(async (values) => {
     // Zero means "no goal / no reminder": drop those keys.
     const clean = (m: Record<string, number>) => Object.fromEntries(Object.entries(m).filter(([, v]) => v > 0));
-    const r = await saveSettings({ ...values, dailyGoals: clean(values.dailyGoals), weeklyGoals: clean(values.weeklyGoals), followUpRules: clean(values.followUpRules) });
+    const r = await saveSettings({ ...values, dailyGoals: clean(values.dailyGoals), weeklyGoals: clean(values.weeklyGoals), followUpRules: clean(values.followUpRules), streakGoals: clean(values.streakGoals) });
     if (!r.ok) {
       applyServerErrors(setError, r.fieldErrors);
       toast.error(r.error);
@@ -70,7 +72,7 @@ export function SettingsForm({ settings }: { settings: Settings }) {
     router.refresh();
   });
 
-  const numberGrid = (name: "dailyGoals" | "weeklyGoals" | "followUpRules", types: ActivityType[], suffix: string) => (
+  const numberGrid = (name: "dailyGoals" | "weeklyGoals" | "followUpRules" | "streakGoals", types: ActivityType[], suffix: string) => (
     <div className="grid gap-x-6 gap-y-2.5 sm:grid-cols-2">
       {types.map((t) => {
         const Icon = ACTIVITY_META[t].icon;
@@ -161,6 +163,10 @@ export function SettingsForm({ settings }: { settings: Settings }) {
 
       <Section title="Daily goals" description="Progress rings on the dashboard. Set 0 to hide a type.">
         {numberGrid("dailyGoals", GOAL_TYPES, "/ day")}
+      </Section>
+
+      <Section title="Streak" description="What a day needs to keep your streak alive. Set 0 to leave a type out.">
+        {numberGrid("streakGoals", STREAK_TYPES, "/ day")}
         <div className="mt-5 max-w-sm">
           <FormField control={control} name="streakMode" label="A day counts toward your streak when…">
             {({ field, id }) => (
@@ -169,8 +175,8 @@ export function SettingsForm({ settings }: { settings: Settings }) {
                 value={field.value}
                 onChange={field.onChange}
                 options={[
-                  { value: "any_goal", label: "At least one daily goal is met" },
-                  { value: "all_goals", label: "Every daily goal is met" },
+                  { value: "any_goal", label: "At least one target is hit" },
+                  { value: "all_goals", label: "Every target is hit" },
                   { value: "any_activity", label: "Anything at all is logged" },
                 ]}
               />

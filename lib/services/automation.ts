@@ -43,11 +43,49 @@ export function defaultChannel(type: ActivityType): Channel {
 
 /* ───────────────────────────── status ───────────────────────────── */
 
+/**
+ * Record the outbound application touchpoint for an opportunity, once.
+ * Goals, streaks and the heatmap count activities — without this, an
+ * application added from the opportunity form or the board is invisible.
+ */
+export function recordApplication(db: Tx, opp: s.Opportunity, at: Date) {
+  const existing = db
+    .select({ id: s.activities.id })
+    .from(s.activities)
+    .where(
+      and(
+        eq(s.activities.opportunityId, opp.id),
+        eq(s.activities.type, "application"),
+        eq(s.activities.direction, "outbound"),
+        isNull(s.activities.deletedAt),
+      ),
+    )
+    .get();
+  if (existing) return null;
+  const rules = db.select({ followUpRules: s.settings.followUpRules }).from(s.settings).where(eq(s.settings.id, 1)).get();
+  const ruleDays = rules?.followUpRules.application;
+  return db
+    .insert(s.activities)
+    .values({
+      type: "application",
+      channel: defaultChannel("application"),
+      direction: "outbound",
+      companyId: opp.companyId,
+      opportunityId: opp.id,
+      subject: opp.title,
+      occurredAt: at,
+      followUpDueAt: ruleDays ? new Date(at.getTime() + ruleDays * DAY) : null,
+      isSeed: opp.isSeed,
+    })
+    .returning()
+    .get();
+}
+
 export function changeStatus(
   db: Tx,
   opportunityId: number,
   to: OpportunityStatus,
-  opts: { at?: Date; reason?: string | null } = {},
+  opts: { at?: Date; reason?: string | null; logApplication?: boolean } = {},
 ) {
   const at = opts.at ?? new Date();
   const opp = db.select().from(s.opportunities).where(eq(s.opportunities.id, opportunityId)).get();
@@ -75,6 +113,7 @@ export function changeStatus(
     .run();
   // History of a sample opportunity stays sample data (keeps analytics' seed exclusion honest).
   db.insert(s.statusHistory).values({ opportunityId, fromStatus: from, toStatus: to, changedAt: at, isSeed: opp.isSeed }).run();
+  if (to === "applied" && !opp.appliedAt && opts.logApplication !== false) recordApplication(db, opp, at);
   return { from, to, changed: true };
 }
 
@@ -83,7 +122,13 @@ export function changeStatus(
  * pipeline. Walks through Applied when coming from Wishlist, since the
  * transition map doesn't allow skipping it.
  */
-export function advanceTo(db: Tx, opportunityId: number, target: OpportunityStatus, at = new Date()) {
+export function advanceTo(
+  db: Tx,
+  opportunityId: number,
+  target: OpportunityStatus,
+  at = new Date(),
+  opts: { logApplication?: boolean } = {},
+) {
   const opp = db.select().from(s.opportunities).where(eq(s.opportunities.id, opportunityId)).get();
   if (!opp) return null;
   const cur = opp.status;
@@ -91,12 +136,12 @@ export function advanceTo(db: Tx, opportunityId: number, target: OpportunityStat
   if (curIdx >= pipelineIndex(target)) return null;
   if (!canTransition(cur, target)) {
     if (cur === "wishlist" && canTransition("applied", target)) {
-      changeStatus(db, opportunityId, "applied", { at });
+      changeStatus(db, opportunityId, "applied", { at, ...opts });
     } else {
       return null;
     }
   }
-  return changeStatus(db, opportunityId, target, { at });
+  return changeStatus(db, opportunityId, target, { at, ...opts });
 }
 
 /* ───────────────────────────── activities ───────────────────────────── */
@@ -168,7 +213,8 @@ export function logActivity(db: DB, input: ActivityValues, settings: Rules, now 
     // Rule: an application creates the opportunity or moves it to Applied.
     if (v.type === "application" && v.direction === "outbound") {
       if (v.opportunityId) {
-        result.statusChange = advanceTo(tx, v.opportunityId, "applied", occurredAt);
+        // The activity inserted below is the application; don't log a second one.
+        result.statusChange = advanceTo(tx, v.opportunityId, "applied", occurredAt, { logApplication: false });
         tx.update(s.opportunities)
           .set({ appliedAt: sql`coalesce(${s.opportunities.appliedAt}, ${occurredAt.getTime()})` })
           .where(eq(s.opportunities.id, v.opportunityId))

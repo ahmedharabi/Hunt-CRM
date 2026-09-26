@@ -8,6 +8,7 @@ import {
   addTagToCompanies,
   addTagToOpportunities,
   changeStatus,
+  recordApplication,
   setCompanyTags,
   setOpportunityTags,
 } from "@/lib/services/automation";
@@ -81,6 +82,7 @@ export async function saveOpportunity(input: OpportunityInput, id?: number) {
           .returning()
           .get();
         tx.insert(s.statusHistory).values({ opportunityId: row.id, fromStatus: null, toStatus: status }).run();
+        if (row.appliedAt) recordApplication(tx, row, row.appliedAt);
       }
       setOpportunityTags(tx, row.id, tags);
       tx.delete(s.opportunityContacts).where(eq(s.opportunityContacts.opportunityId, row.id)).run();

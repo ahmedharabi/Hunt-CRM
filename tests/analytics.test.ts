@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import * as s from "@/db/schema";
 import type { DB } from "@/db/client";
 import * as A from "@/lib/services/analytics";
-import { computeStreaks, dayMeetsGoal, groupFollowUps, followUpsDue } from "@/lib/services/dashboard";
+import { computeStreaks, dayMeetsGoal, groupFollowUps, followUpsDue, streakTargets } from "@/lib/services/dashboard";
 import { getWeeklyReview, weekBounds } from "@/lib/services/review";
 import { exportBackup, importBackup, validateBackup } from "@/lib/services/backup";
 import { localParts } from "@/db/sql-functions";
@@ -187,6 +187,14 @@ describe("dashboard", () => {
     expect(dayMeetsGoal(undefined, goals, "any_activity")).toBe(false);
   });
 
+  it("reports today's progress on each streak target", () => {
+    expect(streakTargets({ cold_email: 2 }, goals, "any_goal")).toEqual([
+      { type: "application", count: 0, goal: 2 },
+      { type: "cold_email", count: 2, goal: 3 },
+    ]);
+    expect(streakTargets({ cold_email: 2 }, goals, "any_activity")).toEqual([]);
+  });
+
   it("keeps the streak alive until today is over", () => {
     const days = map([
       ["2026-09-20", { application: 2 }],
@@ -194,7 +202,7 @@ describe("dashboard", () => {
       ["2026-09-22", { cold_email: 3 }],
       ["2026-09-23", { cold_email: 4 }],
     ]);
-    expect(computeStreaks(days, "2026-09-24", goals, "any_goal")).toEqual({ current: 4, longest: 4, todayMet: false });
+    expect(computeStreaks(days, "2026-09-24", goals, "any_goal")).toMatchObject({ current: 4, longest: 4, todayMet: false });
     days.set("2026-09-24", { application: 2 });
     expect(computeStreaks(days, "2026-09-24", goals, "any_goal").current).toBe(5);
     expect(computeStreaks(days, "2026-09-26", goals, "any_goal")).toMatchObject({ current: 0, longest: 5 });

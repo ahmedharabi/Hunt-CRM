@@ -22,6 +22,27 @@
       "when": 1790294930365,
       "tag": "0002_search_fts",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1790418032050,
+      "tag": "0003_opportunity_country",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1790418408931,
+      "tag": "0004_streak_goals",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1790418562588,
+      "tag": "0005_drop_opportunity_location",
+      "breakpoints": true
     }
   ]
 }

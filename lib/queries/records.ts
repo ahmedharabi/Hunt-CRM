@@ -115,7 +115,7 @@ export type OpportunityRow = {
   status: OpportunityStatus;
   employmentType: EmploymentType;
   workMode: RemotePolicy | null;
-  location: string | null;
+  country: string | null;
   source: OpportunitySource | null;
   compensation: string | null;
   deadline: number | null;
@@ -135,7 +135,7 @@ export type OpportunityRow = {
 export function listOpportunities(): OpportunityRow[] {
   const rows = all<Omit<OpportunityRow, "tags"> & { tags: string | null }>(
     `select o.id, o.title, c.id as companyId, c.name as companyName, c.tier as companyTier, c.logo_url as companyLogo,
-       o.status, o.employment_type as employmentType, o.work_mode as workMode, o.location, o.source, o.compensation,
+       o.status, o.employment_type as employmentType, o.work_mode as workMode, o.country, o.source, o.compensation,
        o.deadline, o.applied_at as appliedAt, o.priority, o.excitement, o.job_url as jobUrl, o.position, o.created_at as createdAt,
        r.name as resumeName,
        (select group_concat(t.name, char(31)) from opportunity_tags ot join tags t on t.id = ot.tag_id where ot.opportunity_id = o.id) as tags,

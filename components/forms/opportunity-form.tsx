@@ -27,7 +27,7 @@ const empty: OpportunityInput = {
   title: "",
   employmentType: "internship",
   workMode: "",
-  location: "",
+  country: "",
   jobUrl: "",
   source: "",
   status: "wishlist",
@@ -189,8 +189,8 @@ export function OpportunityForm({
         </FormField>
       </Row>
       <Row>
-        <FormField control={control} name="location" label="Location" optional>
-          {({ field, id: fid }) => <Input id={fid} {...field} value={field.value ?? ""} placeholder="Remote (EMEA)" className="h-9" />}
+        <FormField control={control} name="country" label="Country" optional>
+          {({ field, id: fid }) => <Input id={fid} {...field} value={field.value ?? ""} placeholder="Germany" className="h-9" />}
         </FormField>
         <FormField control={control} name="compensation" label="Stipend / salary" optional>
           {({ field, id: fid }) => <Input id={fid} {...field} value={field.value ?? ""} placeholder="€1,200/mo" className="h-9" />}

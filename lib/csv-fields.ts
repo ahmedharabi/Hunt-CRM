@@ -49,7 +49,7 @@ export const CSV_FIELDS: Record<"companies" | "contacts" | "opportunities" | "ac
     { key: "status", label: "Status", enum: OPPORTUNITY_STATUSES, aliases: ["stage"] },
     { key: "employmentType", label: "Employment type", enum: EMPLOYMENT_TYPES, aliases: ["type", "job type"] },
     { key: "workMode", label: "Work mode", enum: REMOTE_POLICIES, aliases: ["remote", "remote policy"] },
-    { key: "location", label: "Location" },
+    { key: "country", label: "Country", aliases: ["nation", "location"] },
     { key: "jobUrl", label: "Job URL", aliases: ["url", "link", "posting"] },
     { key: "source", label: "Source", enum: OPPORTUNITY_SOURCES },
     { key: "compensation", label: "Stipend / salary", aliases: ["salary", "stipend", "pay", "compensation"] },

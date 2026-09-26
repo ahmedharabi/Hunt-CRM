@@ -124,14 +124,14 @@ export default async function ReviewPage({ searchParams }: PageProps<"/review">)
                     "tabular mt-1 flex h-9 items-center justify-center rounded-md border text-sm font-medium",
                     d.met ? "border-transparent bg-brand text-brand-foreground" : d.total ? "bg-muted/50" : "text-muted-foreground/60",
                   )}
-                  title={d.met ? "Daily goal met" : undefined}
+                  title={d.met ? "Streak target hit" : undefined}
                 >
                   {d.total}
                 </div>
               </div>
             ))}
           </div>
-          <p className="mt-2 text-xs text-muted-foreground">Filled days met your daily goal ({settings.streakMode.replace("_", " ")}).</p>
+          <p className="mt-2 text-xs text-muted-foreground">Filled days hit your streak target.</p>
         </Panel>
 
         <Panel title="By channel">

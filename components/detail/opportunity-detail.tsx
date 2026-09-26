@@ -41,7 +41,7 @@ export function OpportunityDetail({ opportunity: o, timeline, now }: { opportuni
   const details: [string, React.ReactNode][] = [
     ["Type", EMPLOYMENT_META[o.employmentType].label],
     ["Work mode", o.workMode ? REMOTE_META[o.workMode].label : null],
-    ["Location", o.location],
+    ["Country", o.country],
     ["Source", o.source ? SOURCE_META[o.source].label : null],
     ["Stipend / salary", o.compensation],
     ["Applied", o.appliedAt ? <DateText key="a" value={o.appliedAt} /> : null],
@@ -267,7 +267,7 @@ export function OpportunityDetail({ opportunity: o, timeline, now }: { opportuni
           title: o.title,
           employmentType: o.employmentType,
           workMode: o.workMode ?? "",
-          location: o.location ?? "",
+          country: o.country ?? "",
           jobUrl: o.jobUrl ?? "",
           source: o.source ?? "",
           status: o.status,

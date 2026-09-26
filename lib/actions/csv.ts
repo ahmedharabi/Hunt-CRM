@@ -96,8 +96,9 @@ export async function importCsv(entity: string, input: Record<string, string>[])
             tx.insert(s.statusHistory).values({ opportunityId: id, fromStatus: null, toStatus: "wishlist" }).run();
             if (status !== "wishlist") {
               // Walk through Applied when needed so history stays valid.
-              if (status !== "applied" && status !== "withdrawn") changeStatus(tx, id, "applied");
-              changeStatus(tx, id, status);
+              // Imported rows are history, not today's work: keep them out of goals and streaks.
+              if (status !== "applied" && status !== "withdrawn") changeStatus(tx, id, "applied", { logApplication: false });
+              changeStatus(tx, id, status, { logApplication: false });
             }
             setOpportunityTags(tx, id, tags);
           } else {

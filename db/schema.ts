@@ -25,6 +25,7 @@ import {
   TEMPLATE_TYPES,
   TIERS,
   DEFAULT_DAILY_GOALS,
+  DEFAULT_STREAK_GOALS,
   DEFAULT_FOLLOW_UP_RULES,
   DEFAULT_WEEKLY_GOALS,
   type DailyGoals,
@@ -111,7 +112,7 @@ export const opportunities = sqliteTable(
     title: text("title").notNull(),
     employmentType: text("employment_type", { enum: EMPLOYMENT_TYPES }).notNull().default("internship"),
     workMode: text("work_mode", { enum: REMOTE_POLICIES }),
-    location: text("location"),
+    country: text("country"),
     jobUrl: text("job_url"),
     source: text("source", { enum: OPPORTUNITY_SOURCES }),
     status: text("status", { enum: OPPORTUNITY_STATUSES }).notNull().default("wishlist"),
@@ -311,6 +312,10 @@ export const settings = sqliteTable("settings", {
   ghostingThresholdDays: integer("ghosting_threshold_days").notNull().default(21),
   linkedinWeeklyConnectionLimit: integer("linkedin_weekly_connection_limit").notNull().default(100),
   streakMode: text("streak_mode", { enum: STREAK_MODES }).notNull().default("any_goal"),
+  streakGoals: text("streak_goals", { mode: "json" })
+    .$type<DailyGoals>()
+    .notNull()
+    .default(jsonDefault(DEFAULT_STREAK_GOALS)),
 });
 
 /* ───────────────────────── relations ───────────────────────── */

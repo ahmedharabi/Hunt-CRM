@@ -53,12 +53,13 @@ export function OpportunitiesTable({ rows, views, now }: { rows: OpportunityRow[
     () =>
       rows.map((r) => ({
         ...r,
-        search: [r.title, r.companyName, r.location, r.compensation, ...r.tags].join(" "),
+        search: [r.title, r.companyName, r.country, r.compensation, ...r.tags].join(" "),
         daysInStage: Math.floor((now - r.stageSince) / DAY),
       })),
     [rows, now],
   );
   const tags = useMemo(() => [...new Set(rows.flatMap((r) => r.tags))].sort(), [rows]);
+  const countries = useMemo(() => [...new Set(rows.flatMap((r) => (r.country ? [r.country] : [])))].sort(), [rows]);
 
   const columns = useMemo(
     () =>
@@ -121,6 +122,12 @@ export function OpportunitiesTable({ rows, views, now }: { rows: OpportunityRow[
           cell: ({ getValue }) => <span className="text-muted-foreground">{getValue() ? REMOTE_META[getValue()!].label : "—"}</span>,
           filterFn: "inSet",
           meta: { label: "Work mode" },
+        }),
+        helper.accessor("country", {
+          header: "Country",
+          cell: ({ getValue }) => <span className="whitespace-nowrap text-muted-foreground">{getValue() ?? "—"}</span>,
+          filterFn: "inSet",
+          meta: { label: "Country" },
         }),
         helper.accessor("employmentType", {
           header: "Type",
@@ -220,6 +227,7 @@ export function OpportunitiesTable({ rows, views, now }: { rows: OpportunityRow[
         { columnId: "companyTier", title: "Tier", options: options(TIER_META) },
         { columnId: "source", title: "Source", options: options(SOURCE_META) },
         { columnId: "workMode", title: "Mode", options: options(REMOTE_META) },
+        { columnId: "country", title: "Country", options: countries.map((c) => ({ value: c, label: c })) },
         { columnId: "tags", title: "Tags", options: tags.map((t) => ({ value: t, label: t })) },
       ]}
       views={[...BUILT_IN, ...views.map((v) => ({ id: v.id, name: v.name, state: v.state }))]}
@@ -231,7 +239,7 @@ export function OpportunitiesTable({ rows, views, now }: { rows: OpportunityRow[
           { header: "Status", value: (r) => r.status },
           { header: "Employment type", value: (r) => r.employmentType },
           { header: "Work mode", value: (r) => r.workMode },
-          { header: "Location", value: (r) => r.location },
+          { header: "Country", value: (r) => r.country },
           { header: "Source", value: (r) => r.source },
           { header: "Stipend / salary", value: (r) => r.compensation },
           { header: "Job URL", value: (r) => r.jobUrl },

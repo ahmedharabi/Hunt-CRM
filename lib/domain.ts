@@ -136,6 +136,12 @@ export const DEFAULT_DAILY_GOALS: DailyGoals = {
   follow_up: 2,
 };
 
+/** Targets a day must hit to count toward the streak (separate from the dashboard's goal rings). */
+export const DEFAULT_STREAK_GOALS: DailyGoals = {
+  application: 2,
+  cold_email: 3,
+};
+
 export const DEFAULT_WEEKLY_GOALS: DailyGoals = {
   application: 10,
   cold_email: 15,
