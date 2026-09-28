@@ -22,10 +22,13 @@ import type { SavedView } from "@/db/schema";
 import { ACTIVE_STATUSES, OPPORTUNITY_STATUSES } from "@/lib/domain";
 import { EMPLOYMENT_META, REMOTE_META, SOURCE_META, STATUS_META, TIER_META, options } from "@/lib/meta";
 import { features } from "@/lib/table";
+import { PeriodEmpty, PeriodTabs, usePeriodFilter } from "@/components/data-table/period-tabs";
 
 type Row = OpportunityRow & { search: string; daysInStage: number };
 const helper = createColumnHelper<typeof features, Row>();
 const DAY = 86_400_000;
+/** When you applied; wishlist roles fall back to when they were added. */
+const appliedOrAdded = (r: Row) => r.appliedAt ?? r.createdAt;
 
 const BUILT_IN: TableView[] = [
   { name: "All opportunities", builtIn: true, state: {} },
@@ -60,6 +63,8 @@ export function OpportunitiesTable({ rows, views, now }: { rows: OpportunityRow[
   );
   const tags = useMemo(() => [...new Set(rows.flatMap((r) => r.tags))].sort(), [rows]);
   const countries = useMemo(() => [...new Set(rows.flatMap((r) => (r.country ? [r.country] : [])))].sort(), [rows]);
+
+  const { period, setPeriod, filtered, counts } = usePeriodFilter(data, appliedOrAdded, now);
 
   const columns = useMemo(
     () =>
@@ -214,71 +219,78 @@ export function OpportunitiesTable({ rows, views, now }: { rows: OpportunityRow[
   );
 
   return (
-    <DataTable
-      entity="opportunities"
-      data={data}
-      columns={columns}
-      getRowId={(r) => String(r.id)}
-      searchPlaceholder="Search roles, companies, tags…"
-      defaultVisibility={{ employmentType: false, compensation: false, resumeName: false, tags: false, deadline: false, workMode: false, excitement: false }}
-      defaultSorting={[{ id: "status", desc: false }]}
-      facets={[
-        { columnId: "status", title: "Status", options: options(STATUS_META) },
-        { columnId: "companyTier", title: "Tier", options: options(TIER_META) },
-        { columnId: "source", title: "Source", options: options(SOURCE_META) },
-        { columnId: "workMode", title: "Mode", options: options(REMOTE_META) },
-        { columnId: "country", title: "Country", options: countries.map((c) => ({ value: c, label: c })) },
-        { columnId: "tags", title: "Tags", options: tags.map((t) => ({ value: t, label: t })) },
-      ]}
-      views={[...BUILT_IN, ...views.map((v) => ({ id: v.id, name: v.name, state: v.state }))]}
-      csv={{
-        filename: "opportunities",
-        columns: [
-          { header: "Role", value: (r) => r.title },
-          { header: "Company", value: (r) => r.companyName },
-          { header: "Status", value: (r) => r.status },
-          { header: "Employment type", value: (r) => r.employmentType },
-          { header: "Work mode", value: (r) => r.workMode },
-          { header: "Country", value: (r) => r.country },
-          { header: "Source", value: (r) => r.source },
-          { header: "Stipend / salary", value: (r) => r.compensation },
-          { header: "Job URL", value: (r) => r.jobUrl },
-          { header: "Applied", value: (r) => iso(r.appliedAt) },
-          { header: "Deadline", value: (r) => iso(r.deadline) },
-          { header: "Priority", value: (r) => r.priority },
-          { header: "Excitement", value: (r) => r.excitement },
-          { header: "Resume", value: (r) => r.resumeName },
-          { header: "Tags", value: (r) => r.tags },
-          { header: "Days in stage", value: (r) => r.daysInStage },
-        ],
-      }}
-      importable
-      primaryAction={
-        <Button size="sm" className="h-8" onClick={() => addOpportunity()}>
-          <Plus data-icon="inline-start" />
-          Application
-        </Button>
-      }
-      bulkActions={(sel, clear) => (
-        <>
-          <BulkStatusButton ids={sel.map((r) => r.id)} onDone={clear} />
-          <BulkTagButton entity="opportunities" ids={sel.map((r) => r.id)} onDone={clear} />
-        </>
-      )}
-      onDeleteRows={(sel, clear) => deleteWithUndo("opportunities", sel.map((r) => r.id), plural(sel.length, "opportunity", "opportunities"), clear)}
-      empty={
-        <EmptyState
-          icon={Briefcase}
-          title="No opportunities yet"
-          description="Track roles from wishlist to offer. Logging an application creates one automatically."
-          action={
-            <Button size="sm" onClick={() => addOpportunity()}>
-              <Plus data-icon="inline-start" />
-              New opportunity
-            </Button>
-          }
-        />
-      }
-    />
+    <div className="space-y-3">
+      <PeriodTabs period={period} onChange={setPeriod} counts={counts} />
+      <DataTable
+        entity="opportunities"
+        data={filtered}
+        columns={columns}
+        getRowId={(r) => String(r.id)}
+        searchPlaceholder="Search roles, companies, tags…"
+        defaultVisibility={{ employmentType: false, compensation: false, resumeName: false, tags: false, deadline: false, workMode: false, excitement: false }}
+        defaultSorting={[{ id: "status", desc: false }]}
+        facets={[
+          { columnId: "status", title: "Status", options: options(STATUS_META) },
+          { columnId: "companyTier", title: "Tier", options: options(TIER_META) },
+          { columnId: "source", title: "Source", options: options(SOURCE_META) },
+          { columnId: "workMode", title: "Mode", options: options(REMOTE_META) },
+          { columnId: "country", title: "Country", options: countries.map((c) => ({ value: c, label: c })) },
+          { columnId: "tags", title: "Tags", options: tags.map((t) => ({ value: t, label: t })) },
+        ]}
+        views={[...BUILT_IN, ...views.map((v) => ({ id: v.id, name: v.name, state: v.state }))]}
+        csv={{
+          filename: "opportunities",
+          columns: [
+            { header: "Role", value: (r) => r.title },
+            { header: "Company", value: (r) => r.companyName },
+            { header: "Status", value: (r) => r.status },
+            { header: "Employment type", value: (r) => r.employmentType },
+            { header: "Work mode", value: (r) => r.workMode },
+            { header: "Country", value: (r) => r.country },
+            { header: "Source", value: (r) => r.source },
+            { header: "Stipend / salary", value: (r) => r.compensation },
+            { header: "Job URL", value: (r) => r.jobUrl },
+            { header: "Applied", value: (r) => iso(r.appliedAt) },
+            { header: "Deadline", value: (r) => iso(r.deadline) },
+            { header: "Priority", value: (r) => r.priority },
+            { header: "Excitement", value: (r) => r.excitement },
+            { header: "Resume", value: (r) => r.resumeName },
+            { header: "Tags", value: (r) => r.tags },
+            { header: "Days in stage", value: (r) => r.daysInStage },
+          ],
+        }}
+        importable
+        primaryAction={
+          <Button size="sm" className="h-8" onClick={() => addOpportunity()}>
+            <Plus data-icon="inline-start" />
+            Application
+          </Button>
+        }
+        bulkActions={(sel, clear) => (
+          <>
+            <BulkStatusButton ids={sel.map((r) => r.id)} onDone={clear} />
+            <BulkTagButton entity="opportunities" ids={sel.map((r) => r.id)} onDone={clear} />
+          </>
+        )}
+        onDeleteRows={(sel, clear) => deleteWithUndo("opportunities", sel.map((r) => r.id), plural(sel.length, "opportunity", "opportunities"), clear)}
+        empty={
+          data.length > 0 ? (
+            <PeriodEmpty period={period} onShowAll={() => setPeriod("all")} />
+          ) : (
+            <EmptyState
+              icon={Briefcase}
+              title="No opportunities yet"
+              description="Track roles from wishlist to offer. Logging an application creates one automatically."
+              action={
+                <Button size="sm" onClick={() => addOpportunity()}>
+                  <Plus data-icon="inline-start" />
+                  New opportunity
+                </Button>
+              }
+            />
+          )
+        }
+      />
+    </div>
   );
 }

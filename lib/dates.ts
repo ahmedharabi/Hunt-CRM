@@ -62,3 +62,11 @@ export function startOfWeekTz(date: Date | number, tz: string, weekStartsOn: num
   z.setHours(0, 0, 0, 0);
   return fromZonedTime(z, tz);
 }
+
+/** UTC instant of the start of the month containing `date`, in `tz`. */
+export function startOfMonthTz(date: Date | number, tz: string) {
+  const z = toZonedTime(date, tz);
+  z.setDate(1);
+  z.setHours(0, 0, 0, 0);
+  return fromZonedTime(z, tz);
+}

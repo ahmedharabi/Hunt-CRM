@@ -28,10 +28,12 @@ import type { ActivityRow } from "@/lib/queries/records";
 import type { SavedView } from "@/db/schema";
 import { ACTIVITY_META, CHANNEL_META, OUTCOME_META, options } from "@/lib/meta";
 import { features } from "@/lib/table";
+import { PeriodEmpty, PeriodTabs, usePeriodFilter } from "@/components/data-table/period-tabs";
 
 type Row = ActivityRow & { search: string; waiting: "over7" | "under7" | "na"; isRoot: "root" | "reply" };
 const helper = createColumnHelper<typeof features, Row>();
 const DAY = 86_400_000;
+const occurredAt = (r: Row) => r.occurredAt;
 
 const BUILT_IN: TableView[] = [
   { name: "All activity", builtIn: true, state: {} },
@@ -87,6 +89,8 @@ export function ActivitiesTable({
       })),
     [rows, now],
   );
+
+  const { period, setPeriod, filtered, counts } = usePeriodFilter(data, occurredAt, now);
 
   const columns = useMemo(
     () =>
@@ -232,81 +236,88 @@ export function ActivitiesTable({
   );
 
   return (
-    <DataTable
-      entity="activities"
-      data={data}
-      columns={columns}
-      getRowId={(r) => String(r.id)}
-      searchPlaceholder="Search messages, companies, people…"
-      defaultVisibility={{ opportunityTitle: false, templateName: false, waiting: false, isRoot: false, direction: false, channel: !emailsOnly }}
-      defaultSorting={[{ id: "occurredAt", desc: true }]}
-      facets={[
-        { columnId: "type", title: "Type", options: options(ACTIVITY_META) },
-        ...(emailsOnly ? [] : [{ columnId: "channel", title: "Channel", options: options(CHANNEL_META) }]),
-        { columnId: "outcome", title: "Outcome", options: options(OUTCOME_META) },
-        {
-          columnId: "direction",
-          title: "Direction",
-          options: [
-            { value: "outbound", label: "Sent" },
-            { value: "inbound", label: "Received" },
+    <div className="space-y-3">
+      <PeriodTabs period={period} onChange={setPeriod} counts={counts} />
+      <DataTable
+        entity="activities"
+        data={filtered}
+        columns={columns}
+        getRowId={(r) => String(r.id)}
+        searchPlaceholder="Search messages, companies, people…"
+        defaultVisibility={{ opportunityTitle: false, templateName: false, waiting: false, isRoot: false, direction: false, channel: !emailsOnly }}
+        defaultSorting={[{ id: "occurredAt", desc: true }]}
+        facets={[
+          { columnId: "type", title: "Type", options: options(ACTIVITY_META) },
+          ...(emailsOnly ? [] : [{ columnId: "channel", title: "Channel", options: options(CHANNEL_META) }]),
+          { columnId: "outcome", title: "Outcome", options: options(OUTCOME_META) },
+          {
+            columnId: "direction",
+            title: "Direction",
+            options: [
+              { value: "outbound", label: "Sent" },
+              { value: "inbound", label: "Received" },
+            ],
+          },
+          {
+            columnId: "waiting",
+            title: "Awaiting reply",
+            options: [
+              { value: "over7", label: "More than 7 days" },
+              { value: "under7", label: "7 days or less" },
+            ],
+          },
+        ]}
+        views={[...BUILT_IN, ...views.map((v) => ({ id: v.id, name: v.name, state: v.state }))]}
+        csv={{
+          filename: emailsOnly ? "emails" : "activities",
+          columns: [
+            { header: "Type", value: (r) => r.type },
+            { header: "Direction", value: (r) => r.direction },
+            { header: "Channel", value: (r) => r.channel },
+            { header: "Company", value: (r) => r.companyName },
+            { header: "Contact", value: (r) => r.contactName },
+            { header: "Opportunity", value: (r) => r.opportunityTitle },
+            { header: "Subject", value: (r) => r.subject },
+            { header: "Summary", value: (r) => r.summary },
+            { header: "Date", value: (r) => iso(r.occurredAt) },
+            { header: "Outcome", value: (r) => r.outcome },
+            { header: "Replied at", value: (r) => iso(r.repliedAt) },
+            { header: "Follow-up due", value: (r) => iso(r.followUpDueAt) },
+            { header: "Template", value: (r) => r.templateName },
           ],
-        },
-        {
-          columnId: "waiting",
-          title: "Awaiting reply",
-          options: [
-            { value: "over7", label: "More than 7 days" },
-            { value: "under7", label: "7 days or less" },
-          ],
-        },
-      ]}
-      views={[...BUILT_IN, ...views.map((v) => ({ id: v.id, name: v.name, state: v.state }))]}
-      csv={{
-        filename: emailsOnly ? "emails" : "activities",
-        columns: [
-          { header: "Type", value: (r) => r.type },
-          { header: "Direction", value: (r) => r.direction },
-          { header: "Channel", value: (r) => r.channel },
-          { header: "Company", value: (r) => r.companyName },
-          { header: "Contact", value: (r) => r.contactName },
-          { header: "Opportunity", value: (r) => r.opportunityTitle },
-          { header: "Subject", value: (r) => r.subject },
-          { header: "Summary", value: (r) => r.summary },
-          { header: "Date", value: (r) => iso(r.occurredAt) },
-          { header: "Outcome", value: (r) => r.outcome },
-          { header: "Replied at", value: (r) => iso(r.repliedAt) },
-          { header: "Follow-up due", value: (r) => iso(r.followUpDueAt) },
-          { header: "Template", value: (r) => r.templateName },
-        ],
-      }}
-      importable
-      primaryAction={
-        <Button size="sm" className="h-8" onClick={() => quickLog(emailsOnly ? { type: "cold_email" } : undefined)}>
-          <Plus data-icon="inline-start" />
-          {emailsOnly ? "Log email" : "Log"}
-        </Button>
-      }
-      bulkActions={(sel, clear) => <BulkOutcomeButton ids={sel.map((r) => r.id)} onDone={clear} />}
-      onDeleteRows={(sel, clear) => deleteWithUndo("activities", sel.map((r) => r.id), plural(sel.length, "activity", "activities"), clear)}
-      empty={
-        <EmptyState
-          icon={emailsOnly ? Mail : Activity}
-          title={emailsOnly ? "No emails yet" : "Nothing logged yet"}
-          description={
-            <>
-              Every application, DM and follow-up lands here. Press <kbd className="rounded border px-1 font-mono text-xs">E</kbd> anywhere to log a cold
-              email.
-            </>
-          }
-          action={
-            <Button size="sm" onClick={() => quickLog()}>
-              <Plus data-icon="inline-start" />
-              Log activity
-            </Button>
-          }
-        />
-      }
-    />
+        }}
+        importable
+        primaryAction={
+          <Button size="sm" className="h-8" onClick={() => quickLog(emailsOnly ? { type: "cold_email" } : undefined)}>
+            <Plus data-icon="inline-start" />
+            {emailsOnly ? "Log email" : "Log"}
+          </Button>
+        }
+        bulkActions={(sel, clear) => <BulkOutcomeButton ids={sel.map((r) => r.id)} onDone={clear} />}
+        onDeleteRows={(sel, clear) => deleteWithUndo("activities", sel.map((r) => r.id), plural(sel.length, "activity", "activities"), clear)}
+        empty={
+          data.length > 0 ? (
+            <PeriodEmpty period={period} onShowAll={() => setPeriod("all")} />
+          ) : (
+            <EmptyState
+              icon={emailsOnly ? Mail : Activity}
+              title={emailsOnly ? "No emails yet" : "Nothing logged yet"}
+              description={
+                <>
+                  Every application, DM and follow-up lands here. Press <kbd className="rounded border px-1 font-mono text-xs">E</kbd> anywhere to log a cold
+                  email.
+                </>
+              }
+              action={
+                <Button size="sm" onClick={() => quickLog()}>
+                  <Plus data-icon="inline-start" />
+                  Log activity
+                </Button>
+              }
+            />
+          )
+        }
+      />
+    </div>
   );
 }
