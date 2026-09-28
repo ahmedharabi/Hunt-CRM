@@ -320,6 +320,13 @@ export const settings = sqliteTable("settings", {
   textScale: integer("text_scale").notNull().default(100),
   /** Id from lib/themes.ts; "default" is the built-in look. */
   colorTheme: text("color_theme").notNull().default("default"),
+  /** Stored file name under data/uploads/backgrounds, served by /api/backgrounds. */
+  backgroundImage: text("background_image"),
+  backgroundBlur: integer("background_blur").notNull().default(8),
+  /** How strongly the theme background is laid over the image, in percent. */
+  backgroundDim: integer("background_dim").notNull().default(55),
+  /** Opacity of cards and the sidebar over the image, in percent. */
+  surfaceOpacity: integer("surface_opacity").notNull().default(85),
 });
 
 /* ───────────────────────── relations ───────────────────────── */

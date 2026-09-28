@@ -57,6 +57,13 @@
       "when": 1790630046196,
       "tag": "0007_color_theme",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1790635757265,
+      "tag": "0008_background_image",
+      "breakpoints": true
     }
   ]
 }

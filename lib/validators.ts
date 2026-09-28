@@ -16,7 +16,7 @@ import {
   TEMPLATE_TYPES,
   TIERS,
 } from "./domain";
-import { TEXT_SCALE } from "./appearance";
+import { BACKGROUND, TEXT_SCALE } from "./appearance";
 import { COLOR_THEME_IDS } from "./themes";
 
 /*
@@ -241,6 +241,9 @@ export const settingsSchema = z.object({
 export type SettingsValues = z.output<typeof settingsSchema>;
 
 export const colorThemeSchema = z.enum(COLOR_THEME_IDS);
+
+const bgRange = (k: keyof typeof BACKGROUND) => z.coerce.number().int().min(BACKGROUND[k].min).max(BACKGROUND[k].max);
+export const backgroundStyleSchema = z.object({ blur: bgRange("blur"), dim: bgRange("dim"), surface: bgRange("surface") });
 
 export const textScaleSchema = z.coerce.number().int().min(TEXT_SCALE.min).max(TEXT_SCALE.max);
 

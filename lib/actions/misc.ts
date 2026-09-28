@@ -10,6 +10,7 @@ import { UPLOAD_DIR } from "@/db/paths";
 import { clearSeed } from "@/db/seed-data";
 import { importBackup, resetDatabase, validateBackup } from "@/lib/services/backup";
 import { companiesMissingLogos, fillCompanyLogo } from "@/lib/services/favicon";
+import { BACKGROUND_ROUTE, BACKGROUND_TYPES } from "@/lib/appearance";
 import {
   idSchema,
   resumeSchema,
@@ -18,6 +19,7 @@ import {
   templateSchema,
   textScaleSchema,
   colorThemeSchema,
+  backgroundStyleSchema,
   weeklyNotesSchema,
   type TemplateInput,
 } from "@/lib/validators";
@@ -77,6 +79,48 @@ export async function fetchMissingLogos() {
     );
     return { found, total: companiesMissingLogos(db).length + found };
   });
+}
+
+/* ─────────────────────────── background image ─────────────────────────── */
+
+const BACKGROUND_DIR = path.join(UPLOAD_DIR, "backgrounds");
+
+export async function uploadBackground(formData: FormData) {
+  return run(async () => {
+    const file = formData.get("file");
+    if (!(file instanceof File) || file.size === 0) throw new Error("Pick an image");
+    const ext = path.extname(file.name).toLowerCase();
+    if (!BACKGROUND_TYPES[ext]) throw new Error("Use a JPG, PNG, WebP, AVIF or GIF image");
+    if (file.size > MAX_UPLOAD) throw new Error("Images must be under 10 MB");
+    await fs.mkdir(BACKGROUND_DIR, { recursive: true });
+    const stored = `${randomUUID()}${ext}`;
+    await fs.writeFile(path.join(BACKGROUND_DIR, stored), Buffer.from(await file.arrayBuffer()));
+    const previous = getDb().select({ image: s.settings.backgroundImage }).from(s.settings).where(eq(s.settings.id, 1)).get()?.image;
+    getDb().update(s.settings).set({ backgroundImage: stored }).where(eq(s.settings.id, 1)).run();
+    if (previous) await fs.rm(path.join(BACKGROUND_DIR, path.basename(previous)), { force: true });
+    return { url: `${BACKGROUND_ROUTE}${stored}` };
+  });
+}
+
+export async function removeBackground() {
+  return run(async () => {
+    const previous = getDb().select({ image: s.settings.backgroundImage }).from(s.settings).where(eq(s.settings.id, 1)).get()?.image;
+    getDb().update(s.settings).set({ backgroundImage: null }).where(eq(s.settings.id, 1)).run();
+    if (previous) await fs.rm(path.join(BACKGROUND_DIR, path.basename(previous)), { force: true });
+    return null;
+  });
+}
+
+export async function saveBackgroundStyle(input: unknown) {
+  return run(
+    () => {
+      const { blur, dim, surface } = backgroundStyleSchema.parse(input);
+      getDb().update(s.settings).set({ backgroundBlur: blur, backgroundDim: dim, surfaceOpacity: surface }).where(eq(s.settings.id, 1)).run();
+      return null;
+    },
+    // The sliders already applied the change live; don't re-render under the cursor.
+    { revalidate: false },
+  );
 }
 
 export async function saveView(input: unknown) {

@@ -8,7 +8,7 @@ import { AppActionsProvider } from "@/components/quick-log/app-actions";
 import { ensureDailyBackup } from "@/db/backup";
 import { getFollowUpsDueCount } from "@/lib/queries/overview";
 import { getSettings } from "@/lib/queries/settings";
-import { TEXT_SCALE, clampTextScale } from "@/lib/appearance";
+import { BACKGROUND_ROUTE, TEXT_SCALE, backgroundCss, clampTextScale } from "@/lib/appearance";
 import { colorThemeCss } from "@/lib/themes";
 
 export default async function AppLayout({ children }: LayoutProps<"/">) {
@@ -22,12 +22,25 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
 
   const textScale = clampTextScale(settings.textScale);
   const themeCss = colorThemeCss(settings.colorTheme);
+  const background = settings.backgroundImage
+    ? { url: `${BACKGROUND_ROUTE}${encodeURIComponent(settings.backgroundImage)}`, css: backgroundCss({ blur: settings.backgroundBlur, dim: settings.backgroundDim, surface: settings.surfaceOpacity }) }
+    : null;
 
   return (
     <PrefsProvider value={{ timezone: settings.timezone, weekStartsOn: settings.weekStartsOn }}>
       {/* Server-rendered so the saved text size applies on first paint. */}
       {textScale !== TEXT_SCALE.default && <style>{`html{font-size:${textScale}%}`}</style>}
       {themeCss && <style>{themeCss}</style>}
+      {background && (
+        <>
+          <style>{background.css}</style>
+          {/* Behind everything: the image (oversized so blurred edges stay off-screen), then the theme color over it. */}
+          <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+            <div className="absolute -inset-20 bg-cover bg-center" style={{ backgroundImage: `url("${background.url}")`, filter: "blur(var(--bg-blur))" }} />
+            <div className="absolute inset-0 bg-background" style={{ opacity: "var(--bg-dim)" }} />
+          </div>
+        </>
+      )}
       <LookupsProvider>
         <AppActionsProvider>
           <SidebarProvider defaultOpen={defaultOpen}>
