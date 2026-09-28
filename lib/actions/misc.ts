@@ -9,6 +9,7 @@ import * as s from "@/db/schema";
 import { UPLOAD_DIR } from "@/db/paths";
 import { clearSeed } from "@/db/seed-data";
 import { importBackup, resetDatabase, validateBackup } from "@/lib/services/backup";
+import { companiesMissingLogos, fillCompanyLogo } from "@/lib/services/favicon";
 import {
   idSchema,
   resumeSchema,
@@ -62,6 +63,21 @@ export async function saveColorTheme(input: unknown) {
 }
 
 /* ─────────────────────────── saved views ─────────────────────────── */
+
+/** Backfill: fetch icons for every company with a website and no logo, a few at a time. */
+export async function fetchMissingLogos() {
+  return run(async () => {
+    const db = getDb();
+    const queue = companiesMissingLogos(db);
+    let found = 0;
+    await Promise.all(
+      Array.from({ length: 4 }, async () => {
+        for (let id = queue.shift(); id !== undefined; id = queue.shift()) if (await fillCompanyLogo(db, id)) found++;
+      }),
+    );
+    return { found, total: companiesMissingLogos(db).length + found };
+  });
+}
 
 export async function saveView(input: unknown) {
   return run(() => {

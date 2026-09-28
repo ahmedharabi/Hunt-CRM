@@ -1,6 +1,7 @@
 "use server";
 
 import { and, eq, inArray, isNull } from "drizzle-orm";
+import { after } from "next/server";
 import { z } from "zod";
 import { getDb } from "@/db/client";
 import * as s from "@/db/schema";
@@ -24,6 +25,7 @@ import {
   type OpportunityInput,
 } from "@/lib/validators";
 import { OPPORTUNITY_STATUSES } from "@/lib/domain";
+import { LOGO_ROUTE, refreshCompanyLogo } from "@/lib/services/favicon";
 import { run } from "./run";
 
 /* ─────────────────────────── companies ─────────────────────────── */
@@ -32,13 +34,19 @@ export async function saveCompany(input: CompanyInput, id?: number) {
   return run(() => {
     const { tags, ...values } = companySchema.parse(input);
     const db = getDb();
-    return db.transaction((tx) => {
+    const previousWebsite = id ? db.select({ website: s.companies.website }).from(s.companies).where(eq(s.companies.id, id)).get()?.website : null;
+    const row = db.transaction((tx) => {
       const row = id
         ? tx.update(s.companies).set(values).where(eq(s.companies.id, id)).returning().get()
         : tx.insert(s.companies).values(values).returning().get();
       setCompanyTags(tx, row.id, tags);
-      return { id: row.id, name: row.name };
+      return row;
     });
+    // Fetch the site's icon in the background; it shows up on the next page load.
+    if (row.website && (!row.logoUrl || (row.website !== previousWebsite && row.logoUrl.startsWith(LOGO_ROUTE)))) {
+      after(() => refreshCompanyLogo(getDb(), row.id));
+    }
+    return { id: row.id, name: row.name };
   });
 }
 

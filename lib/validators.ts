@@ -42,6 +42,15 @@ const optUrl = z
   .transform((v) => (v ? (/^https?:\/\//i.test(v) ? v : `https://${v}`) : null))
   .pipe(z.url({ message: "Enter a valid URL" }).nullable());
 
+/** A URL, or a logo we stored from the company's website (served by /api/logos). */
+const optLogoUrl = z.union([
+  z
+    .string()
+    .trim()
+    .regex(/^\/api\/logos\/[\w.-]+(\?v=\d+)?$/),
+  optUrl,
+]);
+
 const optEmail = z
   .string()
   .trim()
@@ -90,7 +99,7 @@ export const companySchema = z.object({
   name: z.string().trim().min(1, "Company name is required").max(120),
   website: optUrl,
   linkedinUrl: optUrl,
-  logoUrl: optUrl,
+  logoUrl: optLogoUrl,
   industry: optText(80),
   size: optEnum(COMPANY_SIZES),
   hqLocation: optText(120),

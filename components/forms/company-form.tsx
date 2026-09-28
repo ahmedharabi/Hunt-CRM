@@ -173,7 +173,7 @@ export function CompanyForm({
           <TagInput id={fid} value={field.value ?? []} onChange={field.onChange} suggestions={lookups?.tags} placeholder="remote-first, europe…" />
         )}
       </FormField>
-      <FormField control={control} name="logoUrl" label="Logo URL" optional description="Leave empty to use initials.">
+      <FormField control={control} name="logoUrl" label="Logo URL" optional description="Leave empty to use the icon from the website, or initials.">
         {({ field, id: fid, invalid }) => (
           <Input id={fid} {...field} value={field.value ?? ""} aria-invalid={invalid} placeholder="https://…/logo.png" className="h-9" />
         )}

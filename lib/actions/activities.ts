@@ -1,6 +1,7 @@
 "use server";
 
 import { eq, inArray } from "drizzle-orm";
+import { after } from "next/server";
 import { z } from "zod";
 import { getDb } from "@/db/client";
 import * as s from "@/db/schema";
@@ -16,12 +17,16 @@ import { ACTIVITY_OUTCOMES } from "@/lib/domain";
 import { getLookups as getLookupsQuery } from "@/lib/queries/records";
 import { getSettings } from "@/lib/queries/settings";
 import { activitySchema, idSchema, idsSchema, interviewSchema, type ActivityInput, type InterviewInput } from "@/lib/validators";
+import { refreshCompanyLogo } from "@/lib/services/favicon";
 import { run } from "./run";
 
 export async function logActivity(input: ActivityInput) {
   return run(() => {
     const values = activitySchema.parse(input);
     const result = logActivityService(getDb(), values, getSettings());
+    const companyId = result.activity.companyId;
+    // A website typed in the quick log: fetch that site's icon in the background.
+    if (companyId && values.companyWebsite) after(() => refreshCompanyLogo(getDb(), companyId));
     return {
       id: result.activity.id,
       createdCompanyId: result.createdCompanyId,

@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 
 function hue(name: string) {
@@ -14,7 +17,8 @@ function initials(name: string) {
 /**
  * Logo if we have one, otherwise initials on a tint derived from the name —
  * stable across renders and themes, low chroma so it never competes with
- * status colors.
+ * status colors. A logo that fails to load (e.g. a stored icon missing after
+ * restoring a backup elsewhere) falls back to the initials.
  */
 export function CompanyAvatar({
   name,
@@ -25,6 +29,8 @@ export function CompanyAvatar({
   logoUrl?: string | null;
   className?: string;
 }) {
+  const [failed, setFailed] = useState<string | null>(null);
+  const showLogo = logoUrl && failed !== logoUrl;
   return (
     <span
       aria-hidden
@@ -36,9 +42,9 @@ export function CompanyAvatar({
       )}
       style={{ ["--h" as string]: hue(name) }}
     >
-      {logoUrl ? (
+      {showLogo ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={logoUrl} alt="" className="size-full object-cover" />
+        <img src={logoUrl} alt="" className="size-full object-cover" onError={() => setFailed(logoUrl)} />
       ) : (
         initials(name)
       )}

@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Database, Download, FileJson, FlaskConical, LoaderCircle, RotateCcw, Upload } from "lucide-react";
+import { Database, Download, FileJson, FlaskConical, ImageDown, LoaderCircle, RotateCcw, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,7 +17,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useLookups } from "@/components/providers/lookups";
-import { clearSampleData, importJsonBackup, resetAllData } from "@/lib/actions/misc";
+import { clearSampleData, fetchMissingLogos, importJsonBackup, resetAllData } from "@/lib/actions/misc";
 
 function Row({ icon: Icon, title, description, children }: { icon: typeof Download; title: string; description: string; children: React.ReactNode }) {
   return (
@@ -81,6 +81,26 @@ export function DataSection({ hasSample, dataDir }: { hasSample: boolean; dataDi
             <Download data-icon="inline-start" />
             hunt.db
           </a>
+        </Button>
+      </Row>
+      <Row icon={ImageDown} title="Company logos" description="Fetch the icon from each company's website, for companies that have a website but no logo.">
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={busy === "logos"}
+          onClick={async () => {
+            setBusy("logos");
+            const r = await fetchMissingLogos();
+            setBusy(null);
+            if (!r.ok) return toast.error(r.error);
+            const { found, total } = r.data;
+            if (total === 0) toast.info("Every company with a website already has a logo");
+            else toast.success(`Found ${found} of ${total} logo${total === 1 ? "" : "s"}`);
+            done();
+          }}
+        >
+          {busy === "logos" && <LoaderCircle className="animate-spin" />}
+          Fetch logos
         </Button>
       </Row>
       {hasSample && (
