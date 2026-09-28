@@ -46,6 +46,7 @@ type State = {
   newContactName: string | null;
   opportunityId: number | null;
   newOpportunityTitle: string;
+  newOpportunityCountry: string;
   parentActivityId: number | null;
   templateId: number | null;
   subject: string;
@@ -62,6 +63,7 @@ const initialState = (p: QuickLogPreset = {}): State => ({
   newContactName: null,
   opportunityId: p.opportunityId ?? null,
   newOpportunityTitle: "",
+  newOpportunityCountry: "",
   parentActivityId: p.parentActivityId ?? null,
   templateId: p.templateId ?? null,
   subject: p.subject ?? "",
@@ -189,6 +191,7 @@ export function QuickLogDialog({
       newContactName: s.contactId ? null : s.newContactName,
       opportunityId: s.opportunityId,
       newOpportunityTitle: s.type === "application" && !s.opportunityId ? s.newOpportunityTitle : null,
+      newOpportunityCountry: s.type === "application" && !s.opportunityId ? s.newOpportunityCountry : null,
       parentActivityId: s.type === "follow_up" || s.direction === "inbound" ? parentId : null,
       templateId: s.templateId,
       subject: s.subject,
@@ -331,18 +334,15 @@ export function QuickLogDialog({
           )}
 
           {s.type === "application" ? (
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="space-y-1.5">
-                <Label htmlFor="ql-opp" className="text-[13px]">Opportunity</Label>
-                <EntityCombobox
-                  id="ql-opp"
-                  options={opportunityOptions}
-                  value={s.opportunityId}
-                  onChange={(v) => set({ opportunityId: v })}
-                  placeholder="New opportunity"
-                />
-              </div>
-              {!s.opportunityId && (
+            s.opportunityId ? (
+              <p className="text-[13px] text-muted-foreground">
+                Applying to{" "}
+                <span className="font-medium text-foreground">
+                  {lookups?.opportunities.find((o) => o.id === s.opportunityId)?.title ?? "this role"}
+                </span>
+              </p>
+            ) : (
+              <div className="grid gap-3 sm:grid-cols-2">
                 <div className="space-y-1.5">
                   <Label htmlFor="ql-role" className="text-[13px]">Role title</Label>
                   <Input
@@ -353,8 +353,20 @@ export function QuickLogDialog({
                     className="h-9"
                   />
                 </div>
-              )}
-            </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="ql-country" className="text-[13px]">
+                    Country <span className="font-normal text-muted-foreground">optional</span>
+                  </Label>
+                  <Input
+                    id="ql-country"
+                    value={s.newOpportunityCountry}
+                    onChange={(e) => set({ newOpportunityCountry: e.target.value })}
+                    placeholder="Germany"
+                    className="h-9"
+                  />
+                </div>
+              </div>
+            )
           ) : (
             s.type !== "follow_up" &&
             opportunityOptions.length > 0 && (

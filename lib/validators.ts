@@ -156,6 +156,7 @@ export const activitySchema = z
     outcome: z.enum(ACTIVITY_OUTCOMES).default("pending"),
     /** For applications with no opportunity: create one with this title. */
     newOpportunityTitle: optText(160),
+    newOpportunityCountry: optText(80),
     /** Inline-create: used when companyId is empty. */
     newCompanyName: optText(120),
     newContactName: optText(120),

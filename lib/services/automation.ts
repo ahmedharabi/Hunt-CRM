@@ -223,7 +223,7 @@ export function logActivity(db: DB, input: ActivityValues, settings: Rules, now 
         const title = v.newOpportunityTitle ?? v.subject ?? "Application";
         const [opp] = tx
           .insert(s.opportunities)
-          .values({ companyId: v.companyId, title, status: "applied", appliedAt: occurredAt, source: "company_website" })
+          .values({ companyId: v.companyId, title, country: v.newOpportunityCountry, status: "applied", appliedAt: occurredAt, source: "company_website" })
           .returning()
           .all();
         tx.insert(s.statusHistory)
