@@ -12,6 +12,10 @@ const nextConfig: NextConfig = {
   // The badge would sit on the mobile quick-add button (or the sidebar's
   // Settings link). Compile and runtime errors still surface without it.
   devIndicators: false,
+  experimental: {
+    // Resume and background uploads go through server actions (default cap: 1 MB).
+    serverActions: { bodySizeLimit: "11mb" },
+  },
 };
 
 export default nextConfig;
