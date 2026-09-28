@@ -9,6 +9,7 @@ import { ensureDailyBackup } from "@/db/backup";
 import { getFollowUpsDueCount } from "@/lib/queries/overview";
 import { getSettings } from "@/lib/queries/settings";
 import { TEXT_SCALE, clampTextScale } from "@/lib/appearance";
+import { colorThemeCss } from "@/lib/themes";
 
 export default async function AppLayout({ children }: LayoutProps<"/">) {
   const settings = getSettings();
@@ -20,11 +21,13 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
   const followUps = getFollowUpsDueCount(new Date(), settings.timezone);
 
   const textScale = clampTextScale(settings.textScale);
+  const themeCss = colorThemeCss(settings.colorTheme);
 
   return (
     <PrefsProvider value={{ timezone: settings.timezone, weekStartsOn: settings.weekStartsOn }}>
       {/* Server-rendered so the saved text size applies on first paint. */}
       {textScale !== TEXT_SCALE.default && <style>{`html{font-size:${textScale}%}`}</style>}
+      {themeCss && <style>{themeCss}</style>}
       <LookupsProvider>
         <AppActionsProvider>
           <SidebarProvider defaultOpen={defaultOpen}>

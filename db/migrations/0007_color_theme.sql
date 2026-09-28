@@ -1,0 +1,1 @@
+ALTER TABLE `settings` ADD `color_theme` text DEFAULT 'default' NOT NULL;

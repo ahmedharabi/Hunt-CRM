@@ -17,6 +17,7 @@ import {
   TIERS,
 } from "./domain";
 import { TEXT_SCALE } from "./appearance";
+import { COLOR_THEME_IDS } from "./themes";
 
 /*
  * Shared by react-hook-form (client) and server actions (server).
@@ -229,6 +230,8 @@ export const settingsSchema = z.object({
   streakGoals: goalMap,
 });
 export type SettingsValues = z.output<typeof settingsSchema>;
+
+export const colorThemeSchema = z.enum(COLOR_THEME_IDS);
 
 export const textScaleSchema = z.coerce.number().int().min(TEXT_SCALE.min).max(TEXT_SCALE.max);
 

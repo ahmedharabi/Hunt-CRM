@@ -18,6 +18,7 @@ import { ACTIVITY_META } from "@/lib/meta";
 import type { Settings } from "@/db/schema";
 import type { z } from "zod";
 import { cn } from "@/lib/utils";
+import { ColorThemePicker } from "./color-theme-picker";
 import { TextSizeStepper } from "./text-size-stepper";
 
 const TIMEZONES = typeof Intl.supportedValuesOf === "function" ? Intl.supportedValuesOf("timeZone") : ["Africa/Tunis", "UTC"];
@@ -107,7 +108,7 @@ export function SettingsForm({ settings }: { settings: Settings }) {
 
   return (
     <form onSubmit={onSubmit} noValidate>
-      <Section title="Appearance" description="Light or dark is saved on this device; text size applies everywhere.">
+      <Section title="Appearance" description="Light or dark is saved on this device; color theme and text size apply everywhere.">
         <div className="grid max-w-md grid-cols-3 gap-2">
           {[
             { value: "light", label: "Light", icon: Sun },
@@ -128,6 +129,10 @@ export function SettingsForm({ settings }: { settings: Settings }) {
               {label}
             </button>
           ))}
+        </div>
+        <div className="mt-5 max-w-xl space-y-2">
+          <span className="text-[0.8125rem]">Color theme</span>
+          <ColorThemePicker initial={settings.colorTheme} />
         </div>
         <div className="mt-5 flex max-w-md items-center justify-between gap-3">
           <span className="text-[0.8125rem]">Text size</span>

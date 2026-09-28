@@ -16,6 +16,7 @@ import {
   settingsSchema,
   templateSchema,
   textScaleSchema,
+  colorThemeSchema,
   weeklyNotesSchema,
   type TemplateInput,
 } from "@/lib/validators";
@@ -48,6 +49,14 @@ export async function saveTextScale(input: unknown) {
   return run(() => {
     const textScale = textScaleSchema.parse(input);
     getDb().update(s.settings).set({ textScale }).where(eq(s.settings.id, 1)).run();
+    return null;
+  });
+}
+
+export async function saveColorTheme(input: unknown) {
+  return run(() => {
+    const colorTheme = colorThemeSchema.parse(input);
+    getDb().update(s.settings).set({ colorTheme }).where(eq(s.settings.id, 1)).run();
     return null;
   });
 }

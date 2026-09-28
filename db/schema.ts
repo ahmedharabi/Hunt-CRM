@@ -318,6 +318,8 @@ export const settings = sqliteTable("settings", {
     .default(jsonDefault(DEFAULT_STREAK_GOALS)),
   /** Root font size in percent; everything is sized in rem, so it scales the whole UI. */
   textScale: integer("text_scale").notNull().default(100),
+  /** Id from lib/themes.ts; "default" is the built-in look. */
+  colorTheme: text("color_theme").notNull().default("default"),
 });
 
 /* ───────────────────────── relations ───────────────────────── */
