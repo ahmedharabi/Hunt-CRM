@@ -10,7 +10,7 @@ import { DataTable, SortHeader, selectColumn, type TableView } from "@/component
 import { BulkStatusButton, BulkTagButton } from "@/components/data-table/bulk";
 import { iso } from "@/components/data-table/csv";
 import { CompanyAvatar } from "@/components/shared/company-avatar";
-import { StatusBadge } from "@/components/shared/status-badge";
+import { StatusMenu } from "@/components/shared/status-menu";
 import { Dots, PriorityBars, TierBadge } from "@/components/shared/badges";
 import { DateText } from "@/components/shared/relative-time";
 import { NextStep } from "@/components/shared/next-step";
@@ -74,7 +74,7 @@ export function OpportunitiesTable({ rows, views, now }: { rows: OpportunityRow[
           id: "title",
           header: ({ column }) => <SortHeader column={column} title="Role" />,
           cell: ({ row }) => (
-            <Link href={`/opportunities/${row.original.id}`} className="group/link flex min-w-56 items-center gap-2.5">
+            <Link href={`/opportunities/${row.original.id}`} className="group/link flex max-w-80 min-w-56 items-center gap-2.5">
               <CompanyAvatar name={row.original.companyName} logoUrl={row.original.companyLogo} className="size-6 text-[0.5625rem]" />
               <span className="min-w-0">
                 <span className="block truncate font-medium group-hover/link:underline group-hover/link:underline-offset-2">{row.original.title}</span>
@@ -88,7 +88,7 @@ export function OpportunitiesTable({ rows, views, now }: { rows: OpportunityRow[
         }),
         helper.accessor("status", {
           header: ({ column }) => <SortHeader column={column} title="Status" />,
-          cell: ({ getValue }) => <StatusBadge status={getValue()} />,
+          cell: ({ row }) => <StatusMenu opportunityId={row.original.id} status={row.original.status} />,
           filterFn: "inSet",
           sortFn: (a, b) => OPPORTUNITY_STATUSES.indexOf(a.original.status) - OPPORTUNITY_STATUSES.indexOf(b.original.status),
           meta: { label: "Status" },
