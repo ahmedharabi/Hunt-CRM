@@ -47,6 +47,9 @@ type State = {
   opportunityId: number | null;
   newOpportunityTitle: string;
   newOpportunityCountry: string;
+  /** null = untouched: show what's already saved on the contact/company. */
+  contactEmail: string | null;
+  companyWebsite: string | null;
   parentActivityId: number | null;
   templateId: number | null;
   subject: string;
@@ -64,6 +67,8 @@ const initialState = (p: QuickLogPreset = {}): State => ({
   opportunityId: p.opportunityId ?? null,
   newOpportunityTitle: "",
   newOpportunityCountry: "",
+  contactEmail: null,
+  companyWebsite: null,
   parentActivityId: p.parentActivityId ?? null,
   templateId: p.templateId ?? null,
   subject: p.subject ?? "",
@@ -110,6 +115,9 @@ export function QuickLogDialog({
   const set = (patch: Partial<State>) => setS((prev) => ({ ...prev, ...patch }));
 
   const company = lookups?.companies.find((c) => c.id === s.companyId);
+  const contact = lookups?.contacts.find((c) => c.id === s.contactId);
+  const contactEmail = s.contactEmail ?? contact?.email ?? "";
+  const companyWebsite = s.companyWebsite ?? company?.website ?? "";
   const companyOptions = useMemo(
     () =>
       (lookups?.companies ?? []).map((c) => ({
@@ -192,6 +200,9 @@ export function QuickLogDialog({
       opportunityId: s.opportunityId,
       newOpportunityTitle: s.type === "application" && !s.opportunityId ? s.newOpportunityTitle : null,
       newOpportunityCountry: s.type === "application" && !s.opportunityId ? s.newOpportunityCountry : null,
+      // Only send what the user actually typed, so logging never rewrites saved values.
+      contactEmail: s.type === "cold_email" && s.contactEmail !== null && s.contactEmail !== contact?.email ? s.contactEmail : null,
+      companyWebsite: s.type === "cold_email" && s.companyWebsite !== null && s.companyWebsite !== company?.website ? s.companyWebsite : null,
       parentActivityId: s.type === "follow_up" || s.direction === "inbound" ? parentId : null,
       templateId: s.templateId,
       subject: s.subject,
@@ -285,8 +296,10 @@ export function QuickLogDialog({
                 id="ql-company"
                 options={companyOptions}
                 value={s.companyId}
-                onChange={(v) => set({ companyId: v, contactId: null, opportunityId: null, parentActivityId: null })}
-                onCreate={(name) => set({ newCompanyName: name, companyId: null, contactId: null })}
+                onChange={(v) =>
+                  set({ companyId: v, contactId: null, opportunityId: null, parentActivityId: null, companyWebsite: null, contactEmail: null })
+                }
+                onCreate={(name) => set({ newCompanyName: name, companyId: null, contactId: null, companyWebsite: null, contactEmail: null })}
                 pendingCreate={s.newCompanyName}
                 onClearCreate={() => set({ newCompanyName: null })}
                 placeholder="Search or create…"
@@ -300,14 +313,44 @@ export function QuickLogDialog({
                 id="ql-contact"
                 options={contactOptions}
                 value={s.contactId}
-                onChange={(v) => set({ contactId: v, parentActivityId: null })}
-                onCreate={(name) => set({ newContactName: name, contactId: null })}
+                onChange={(v) => set({ contactId: v, parentActivityId: null, contactEmail: null })}
+                onCreate={(name) => set({ newContactName: name, contactId: null, contactEmail: null })}
                 pendingCreate={s.newContactName}
                 onClearCreate={() => set({ newContactName: null })}
                 placeholder="Who?"
               />
             </div>
           </div>
+
+          {s.type === "cold_email" && (
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label htmlFor="ql-email" className="text-[13px]">
+                  Email <span className="font-normal text-muted-foreground">optional</span>
+                </Label>
+                <Input
+                  id="ql-email"
+                  type="email"
+                  value={contactEmail}
+                  onChange={(e) => set({ contactEmail: e.target.value })}
+                  placeholder="jane@company.com"
+                  className="h-9"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="ql-website" className="text-[13px]">
+                  Company website <span className="font-normal text-muted-foreground">optional</span>
+                </Label>
+                <Input
+                  id="ql-website"
+                  value={companyWebsite}
+                  onChange={(e) => set({ companyWebsite: e.target.value })}
+                  placeholder="company.com"
+                  className="h-9"
+                />
+              </div>
+            </div>
+          )}
 
           {recent && (
             <p className="flex items-start gap-2 rounded-md bg-status-withdrawn/10 px-2.5 py-2 text-xs text-foreground/85">

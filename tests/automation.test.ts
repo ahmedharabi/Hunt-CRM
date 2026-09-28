@@ -187,6 +187,18 @@ describe("logging activities", () => {
     expect(contact.companyId).toBe(r.createdCompanyId);
   });
 
+  it("saves the email and company website from a cold email", () => {
+    const r = log({ type: "cold_email", newCompanyName: "Koyeb", contactEmail: "jobs@koyeb.com", companyWebsite: "koyeb.com" });
+    const company = db.select().from(s.companies).where(eq(s.companies.id, r.createdCompanyId!)).get()!;
+    const contact = db.select().from(s.contacts).where(eq(s.contacts.id, r.createdContactId!)).get()!;
+    expect(company.website).toBe("https://koyeb.com");
+    expect(contact).toMatchObject({ name: "jobs@koyeb.com", email: "jobs@koyeb.com", companyId: company.id });
+
+    log({ type: "cold_email", companyId, contactId, contactEmail: "yann@acme.dev", companyWebsite: "https://acme.dev" });
+    expect(db.select().from(s.contacts).where(eq(s.contacts.id, contactId)).get()!.email).toBe("yann@acme.dev");
+    expect(db.select().from(s.companies).where(eq(s.companies.id, companyId)).get()!.website).toBe("https://acme.dev");
+  });
+
   it("requires a company for outreach", () => {
     expect(() => activitySchema.parse({ type: "cold_email" })).toThrow(/company/i);
   });

@@ -196,18 +196,24 @@ export function logActivity(db: DB, input: ActivityValues, settings: Rules, now 
     }
 
     if (!v.companyId && v.newCompanyName) {
-      const [company] = tx.insert(s.companies).values({ name: v.newCompanyName }).returning().all();
+      const [company] = tx.insert(s.companies).values({ name: v.newCompanyName, website: v.companyWebsite }).returning().all();
       v.companyId = company.id;
       result.createdCompanyId = company.id;
+    } else if (v.companyId && v.companyWebsite) {
+      tx.update(s.companies).set({ website: v.companyWebsite }).where(eq(s.companies.id, v.companyId)).run();
     }
-    if (!v.contactId && v.newContactName) {
+    // An email with no named contact still gets a contact, named after the address.
+    const newContactName = v.newContactName ?? (v.contactId ? null : v.contactEmail);
+    if (!v.contactId && newContactName) {
       const [contact] = tx
         .insert(s.contacts)
-        .values({ name: v.newContactName, companyId: v.companyId })
+        .values({ name: newContactName, companyId: v.companyId, email: v.contactEmail })
         .returning()
         .all();
       v.contactId = contact.id;
       result.createdContactId = contact.id;
+    } else if (v.contactId && v.contactEmail) {
+      tx.update(s.contacts).set({ email: v.contactEmail }).where(eq(s.contacts.id, v.contactId)).run();
     }
 
     // Rule: an application creates the opportunity or moves it to Applied.

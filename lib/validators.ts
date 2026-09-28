@@ -160,6 +160,10 @@ export const activitySchema = z
     /** Inline-create: used when companyId is empty. */
     newCompanyName: optText(120),
     newContactName: optText(120),
+    /** Saved onto the (new or existing) contact; creates a contact when none is given. */
+    contactEmail: optEmail,
+    /** Saved onto the (new or existing) company. */
+    companyWebsite: optUrl,
   })
   .superRefine((v, ctx) => {
     if (!v.companyId && !v.newCompanyName && !v.parentActivityId && v.type !== "note") {

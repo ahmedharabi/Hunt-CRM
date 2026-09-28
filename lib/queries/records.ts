@@ -347,8 +347,8 @@ export function getOpportunity(id: number) {
 
 export function getLookups() {
   return {
-    companies: all<{ id: number; name: string; tier: Tier; timezone: string | null; logoUrl: string | null }>(
-      `select id, name, tier, timezone, logo_url as logoUrl from companies where deleted_at is null order by name collate nocase`,
+    companies: all<{ id: number; name: string; tier: Tier; timezone: string | null; logoUrl: string | null; website: string | null }>(
+      `select id, name, tier, timezone, logo_url as logoUrl, website from companies where deleted_at is null order by name collate nocase`,
     ),
     contacts: all<{ id: number; name: string; role: string | null; companyId: number | null; email: string | null }>(
       `select id, name, role, company_id as companyId, email from contacts where deleted_at is null order by name collate nocase`,
