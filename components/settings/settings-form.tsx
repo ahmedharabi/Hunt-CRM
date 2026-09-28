@@ -18,6 +18,7 @@ import { ACTIVITY_META } from "@/lib/meta";
 import type { Settings } from "@/db/schema";
 import type { z } from "zod";
 import { cn } from "@/lib/utils";
+import { TextSizeStepper } from "./text-size-stepper";
 
 const TIMEZONES = typeof Intl.supportedValuesOf === "function" ? Intl.supportedValuesOf("timeZone") : ["Africa/Tunis", "UTC"];
 const GOAL_TYPES: ActivityType[] = ["application", "cold_email", "linkedin_dm", "linkedin_connection", "follow_up", "referral_request", "call", "coffee_chat"];
@@ -30,8 +31,8 @@ export function Section({ title, description, children, id }: { title: string; d
   return (
     <section id={id} className="grid gap-4 border-b py-8 first:pt-0 last:border-0 md:grid-cols-[220px_1fr] md:gap-10">
       <div>
-        <h3 className="text-[14px] font-medium">{title}</h3>
-        {description && <p className="mt-1 text-[13px] leading-relaxed text-muted-foreground">{description}</p>}
+        <h3 className="text-[0.875rem] font-medium">{title}</h3>
+        {description && <p className="mt-1 text-[0.8125rem] leading-relaxed text-muted-foreground">{description}</p>}
       </div>
       <div className="min-w-0">{children}</div>
     </section>
@@ -80,7 +81,7 @@ export function SettingsForm({ settings }: { settings: Settings }) {
           <FormField key={t} control={control} name={`${name}.${t}` as const}>
             {({ field, id }) => (
               <div className="flex items-center justify-between gap-3">
-                <label htmlFor={id} className="flex min-w-0 items-center gap-2 text-[13px]">
+                <label htmlFor={id} className="flex min-w-0 items-center gap-2 text-[0.8125rem]">
                   <Icon className="size-3.5 shrink-0" style={{ color: ACTIVITY_META[t].color }} />
                   <span className="truncate">{ACTIVITY_META[t].label}</span>
                 </label>
@@ -106,7 +107,7 @@ export function SettingsForm({ settings }: { settings: Settings }) {
 
   return (
     <form onSubmit={onSubmit} noValidate>
-      <Section title="Appearance" description="Follows your system by default.">
+      <Section title="Appearance" description="Light or dark is saved on this device; text size applies everywhere.">
         <div className="grid max-w-md grid-cols-3 gap-2">
           {[
             { value: "light", label: "Light", icon: Sun },
@@ -119,7 +120,7 @@ export function SettingsForm({ settings }: { settings: Settings }) {
               onClick={() => setTheme(value)}
               aria-pressed={theme === value}
               className={cn(
-                "flex flex-col items-center gap-1.5 rounded-lg border py-3 text-[13px] transition-colors",
+                "flex flex-col items-center gap-1.5 rounded-lg border py-3 text-[0.8125rem] transition-colors",
                 theme === value ? "border-foreground/40 bg-muted" : "text-muted-foreground hover:bg-muted/50",
               )}
             >
@@ -127,6 +128,10 @@ export function SettingsForm({ settings }: { settings: Settings }) {
               {label}
             </button>
           ))}
+        </div>
+        <div className="mt-5 flex max-w-md items-center justify-between gap-3">
+          <span className="text-[0.8125rem]">Text size</span>
+          <TextSizeStepper initial={settings.textScale} />
         </div>
       </Section>
 

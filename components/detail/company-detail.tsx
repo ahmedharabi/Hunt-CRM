@@ -50,7 +50,7 @@ export function CompanyDetail({ company, contacts, opportunities, timeline, now 
             <h2 className="text-2xl font-semibold tracking-[-0.025em]">{company.name}</h2>
             <TierBadge tier={company.tier} />
           </div>
-          <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-[13px] text-muted-foreground">
+          <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-[0.8125rem] text-muted-foreground">
             {company.industry && <span>{company.industry}</span>}
             {company.size && <MetaItem icon={Users}>{company.size}</MetaItem>}
             {(company.hqLocation || company.country) && (
@@ -126,7 +126,7 @@ export function CompanyDetail({ company, contacts, opportunities, timeline, now 
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
         <section className="min-w-0 rounded-xl border bg-card p-4 md:p-5">
-          <h3 className="mb-4 text-[13px] font-medium">Timeline</h3>
+          <h3 className="mb-4 text-[0.8125rem] font-medium">Timeline</h3>
           <Timeline items={timeline} now={now} show={{ contact: true, opportunity: true }} />
         </section>
 
@@ -145,7 +145,7 @@ export function CompanyDetail({ company, contacts, opportunities, timeline, now 
                 {opportunities.map((o) => (
                   <li key={o.id}>
                     <Link href={`/opportunities/${o.id}`} className="flex items-center justify-between gap-3 px-4 py-2.5 hover:bg-muted/50">
-                      <span className="truncate text-[13px] font-medium">{o.title}</span>
+                      <span className="truncate text-[0.8125rem] font-medium">{o.title}</span>
                       <StatusBadge status={o.status} />
                     </Link>
                   </li>
@@ -171,7 +171,7 @@ export function CompanyDetail({ company, contacts, opportunities, timeline, now 
                   <li key={c.id}>
                     <Link href={`/contacts/${c.id}`} className="flex items-center justify-between gap-3 px-4 py-2.5 hover:bg-muted/50">
                       <span className="min-w-0">
-                        <span className="block truncate text-[13px] font-medium">{c.name}</span>
+                        <span className="block truncate text-[0.8125rem] font-medium">{c.name}</span>
                         {c.role && <span className="block truncate text-xs text-muted-foreground">{c.role}</span>}
                       </span>
                       <RelativeTime value={c.lastContactedAt} now={now} className="shrink-0 text-xs text-muted-foreground" />

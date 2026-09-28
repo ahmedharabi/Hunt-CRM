@@ -49,7 +49,7 @@ export function ContactForm({
       (lookups?.companies ?? []).map((c) => ({
         value: c.id,
         label: c.name,
-        icon: <CompanyAvatar name={c.name} logoUrl={c.logoUrl} className="size-5 rounded text-[8px]" />,
+        icon: <CompanyAvatar name={c.name} logoUrl={c.logoUrl} className="size-5 rounded text-[0.5rem]" />,
       })),
     [lookups],
   );
@@ -113,7 +113,7 @@ export function ContactForm({
         )}
       </FormField>
       <FormField control={control} name="notes" label="Notes" optional description="Markdown supported.">
-        {({ field, id: fid }) => <Textarea id={fid} {...field} value={field.value ?? ""} rows={5} className="font-mono text-[13px]" />}
+        {({ field, id: fid }) => <Textarea id={fid} {...field} value={field.value ?? ""} rows={5} className="font-mono text-[0.8125rem]" />}
       </FormField>
     </FormSheet>
   );

@@ -38,7 +38,7 @@ function FollowUpRow({ item, now, compact }: { item: FollowUpItem; now: number; 
     <li className="group/row flex items-center gap-3 px-4 py-2.5">
       <ActivityIcon type={item.type} />
       <div className="min-w-0 flex-1">
-        <p className="flex items-center gap-2 truncate text-[13.5px]">
+        <p className="flex items-center gap-2 truncate text-[0.84375rem]">
           {item.contactId ? (
             <Link href={`/contacts/${item.contactId}`} className="truncate font-medium hover:underline">
               {who}

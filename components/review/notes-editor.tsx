@@ -40,7 +40,7 @@ export function NotesEditor({ weekStart, initial }: { weekStart: string; initial
         onBlur={() => void save(value)}
         rows={8}
         placeholder={"What worked this week? What didn't?\nWhat will you change next week?"}
-        className="text-[13.5px] leading-relaxed"
+        className="text-[0.84375rem] leading-relaxed"
         aria-label="Weekly reflection"
       />
       <p className="flex h-4 items-center gap-1.5 text-xs text-muted-foreground" aria-live="polite">

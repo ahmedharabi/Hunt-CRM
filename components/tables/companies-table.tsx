@@ -67,7 +67,7 @@ export function CompaniesTable({ rows, views, now }: { rows: CompanyRow[]; views
           header: ({ column }) => <SortHeader column={column} title="Company" />,
           cell: ({ row }) => (
             <Link href={`/companies/${row.original.id}`} className="group/link flex min-w-44 items-center gap-2.5">
-              <CompanyAvatar name={row.original.name} logoUrl={row.original.logoUrl} className="size-6 text-[9px]" />
+              <CompanyAvatar name={row.original.name} logoUrl={row.original.logoUrl} className="size-6 text-[0.5625rem]" />
               <span className="min-w-0">
                 <span className="block truncate font-medium group-hover/link:underline group-hover/link:underline-offset-2">{row.original.name}</span>
                 {row.original.website && (
@@ -98,7 +98,7 @@ export function CompaniesTable({ rows, views, now }: { rows: CompanyRow[]; views
           cell: ({ getValue }) => (
             <span className="flex max-w-56 gap-1 overflow-hidden">
               {getValue().slice(0, 3).map((t) => (
-                <span key={t} className="rounded bg-muted px-1.5 py-0.5 text-[11px] whitespace-nowrap">
+                <span key={t} className="rounded bg-muted px-1.5 py-0.5 text-[0.6875rem] whitespace-nowrap">
                   {t}
                 </span>
               ))}

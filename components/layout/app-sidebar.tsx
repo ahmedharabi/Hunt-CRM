@@ -38,7 +38,7 @@ export function AppSidebar({ counts }: { counts: SidebarCounts }) {
           className="flex items-center gap-2 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
         >
           <LogoMark className="size-[22px] shrink-0" />
-          <span className="text-[15px] font-semibold tracking-[-0.02em] text-sidebar-accent-foreground group-data-[collapsible=icon]:hidden">
+          <span className="text-[0.9375rem] font-semibold tracking-[-0.02em] text-sidebar-accent-foreground group-data-[collapsible=icon]:hidden">
             Hunt
           </span>
         </Link>
@@ -48,7 +48,7 @@ export function AppSidebar({ counts }: { counts: SidebarCounts }) {
         {NAV.map((group, i) => (
           <SidebarGroup key={group.label ?? i} className="py-1.5">
             {group.label && (
-              <SidebarGroupLabel className="h-7 text-[11px] font-medium tracking-wide text-muted-foreground/80 uppercase">
+              <SidebarGroupLabel className="h-7 text-[0.6875rem] font-medium tracking-wide text-muted-foreground/80 uppercase">
                 {group.label}
               </SidebarGroupLabel>
             )}
@@ -87,7 +87,7 @@ function NavLink({ item, active, badge }: { item: NavItem; active: boolean; badg
         asChild
         isActive={active}
         tooltip={item.title}
-        className="h-8 gap-2.5 text-[13.5px] text-sidebar-foreground data-active:text-sidebar-accent-foreground [&>svg]:text-muted-foreground data-active:[&>svg]:text-brand"
+        className="h-8 gap-2.5 text-[0.84375rem] text-sidebar-foreground data-active:text-sidebar-accent-foreground [&>svg]:text-muted-foreground data-active:[&>svg]:text-brand"
       >
         <Link
           href={item.href}
@@ -99,7 +99,7 @@ function NavLink({ item, active, badge }: { item: NavItem; active: boolean; badg
         </Link>
       </SidebarMenuButton>
       {badge ? (
-        <SidebarMenuBadge className="tabular rounded-full bg-brand-soft px-1.5 text-[11px] font-medium text-brand peer-data-active/menu-button:text-brand">
+        <SidebarMenuBadge className="tabular rounded-full bg-brand-soft px-1.5 text-[0.6875rem] font-medium text-brand peer-data-active/menu-button:text-brand">
           {badge > 99 ? "99+" : badge}
         </SidebarMenuBadge>
       ) : null}

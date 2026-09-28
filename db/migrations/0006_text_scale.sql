@@ -1,0 +1,1 @@
+ALTER TABLE `settings` ADD `text_scale` integer DEFAULT 100 NOT NULL;

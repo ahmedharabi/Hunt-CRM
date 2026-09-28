@@ -121,7 +121,7 @@ export function CommandPalette({ open, onOpenChange, actions }: { open: boolean;
             <CommandGroup heading="Companies">
               {companies.map((c) => (
                 <CommandItem key={`c${c.id}`} value={`company-${c.id}`} onSelect={() => go(`/companies/${c.id}`)}>
-                  <CompanyAvatar name={c.name} logoUrl={c.logoUrl} className="size-5 rounded text-[8px]" />
+                  <CompanyAvatar name={c.name} logoUrl={c.logoUrl} className="size-5 rounded text-[0.5rem]" />
                   {c.name}
                   <span className="ml-auto text-xs text-muted-foreground capitalize">{c.tier}</span>
                 </CommandItem>
@@ -244,7 +244,7 @@ export function CommandPalette({ open, onOpenChange, actions }: { open: boolean;
             </CommandGroup>
           )}
         </CommandList>
-        <div className="flex items-center gap-3 border-t px-3 py-2 text-[11px] text-muted-foreground">
+        <div className="flex items-center gap-3 border-t px-3 py-2 text-[0.6875rem] text-muted-foreground">
           <span>↑↓ navigate</span>
           <span>↵ open</span>
           <span>esc close</span>

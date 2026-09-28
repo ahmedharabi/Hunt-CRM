@@ -140,7 +140,7 @@ export function CsvImportDialog({ entity, open, onOpenChange }: { entity: keyof 
               <div className="grid gap-x-6 gap-y-2.5 sm:grid-cols-2">
                 {fields.map((f) => (
                   <div key={f.key} className="flex items-center justify-between gap-3">
-                    <span className="text-[13px]">
+                    <span className="text-[0.8125rem]">
                       {f.label}
                       {f.required && <span className="text-destructive"> *</span>}
                     </span>

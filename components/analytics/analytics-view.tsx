@@ -331,11 +331,11 @@ function Kpi({
     <div className="flex flex-col gap-1 px-4 py-4 md:px-5">
       <Tooltip>
         <TooltipTrigger asChild>
-          <span className="w-fit cursor-help text-[12.5px] text-muted-foreground decoration-dotted underline-offset-4 hover:underline">{label}</span>
+          <span className="w-fit cursor-help text-[0.78125rem] text-muted-foreground decoration-dotted underline-offset-4 hover:underline">{label}</span>
         </TooltipTrigger>
         <TooltipContent className="max-w-64 text-xs">{info}</TooltipContent>
       </Tooltip>
-      <span className="text-[28px] leading-none font-semibold tracking-[-0.03em]">{format(value)}</span>
+      <span className="text-[1.75rem] leading-none font-semibold tracking-[-0.03em]">{format(value)}</span>
       <span className="flex items-center gap-2 text-xs text-muted-foreground">
         {hasPrev ? (
           <span className="inline-flex items-center gap-1">

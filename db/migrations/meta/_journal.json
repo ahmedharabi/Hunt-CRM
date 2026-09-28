@@ -43,6 +43,13 @@
       "when": 1790418562588,
       "tag": "0005_drop_opportunity_location",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1790629749746,
+      "tag": "0006_text_scale",
+      "breakpoints": true
     }
   ]
 }

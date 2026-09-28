@@ -25,8 +25,8 @@ function Row({ icon: Icon, title, description, children }: { icon: typeof Downlo
       <div className="flex min-w-0 flex-1 gap-3">
         <Icon className="mt-0.5 size-4 shrink-0 text-muted-foreground" strokeWidth={1.85} />
         <div>
-          <p className="text-[13.5px] font-medium">{title}</p>
-          <p className="text-[13px] text-muted-foreground">{description}</p>
+          <p className="text-[0.84375rem] font-medium">{title}</p>
+          <p className="text-[0.8125rem] text-muted-foreground">{description}</p>
         </div>
       </div>
       <div className="shrink-0 pl-7 sm:pl-0">{children}</div>

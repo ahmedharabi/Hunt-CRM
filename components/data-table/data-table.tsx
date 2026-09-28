@@ -264,7 +264,7 @@ export function DataTable<TData extends Record<string, unknown>>({
       {/* Table */}
       <div className="overflow-hidden rounded-xl border bg-card">
         <div className="overflow-x-auto">
-          <UITable className="text-[13px]">
+          <UITable className="text-[0.8125rem]">
             <TableHeader className="bg-muted/40 [&_tr]:border-b">
               {table.getHeaderGroups().map((group) => (
                 <TableRow key={group.id} className="hover:bg-transparent">
@@ -335,7 +335,7 @@ export function DataTable<TData extends Record<string, unknown>>({
       {selected.length > 0 && (
         <div className="fixed inset-x-0 bottom-[calc(5.5rem+env(safe-area-inset-bottom))] z-30 flex justify-center px-4 md:bottom-6">
           <div className="flex flex-wrap items-center gap-1.5 rounded-xl border bg-popover p-1.5 pl-3 shadow-lg">
-            <span className="tabular mr-1 text-[13px] font-medium">{selected.length} selected</span>
+            <span className="tabular mr-1 text-[0.8125rem] font-medium">{selected.length} selected</span>
             {bulkActions?.(selected, clearSelection)}
             {onDeleteRows && (
               <Button variant="destructive" size="sm" onClick={() => onDeleteRows(selected, clearSelection)}>
@@ -462,12 +462,12 @@ function FacetFilter<TData extends Record<string, unknown>>({ column, facet }: {
           {selected.size > 0 && (
             <span className="ml-0.5 flex gap-1">
               {selected.size > 2 ? (
-                <span className="rounded bg-muted px-1.5 text-[11px]">{selected.size} selected</span>
+                <span className="rounded bg-muted px-1.5 text-[0.6875rem]">{selected.size} selected</span>
               ) : (
                 facet.options
                   .filter((o) => selected.has(o.value))
                   .map((o) => (
-                    <span key={o.value} className="rounded bg-muted px-1.5 text-[11px]">
+                    <span key={o.value} className="rounded bg-muted px-1.5 text-[0.6875rem]">
                       {o.label}
                     </span>
                   ))

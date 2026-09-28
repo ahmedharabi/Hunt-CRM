@@ -17,7 +17,7 @@ export function Panel({
   return (
     <section className={cn("min-w-0 rounded-xl border bg-card", className)}>
       <header className="flex h-11 items-center justify-between border-b px-4">
-        <h3 className="text-[13px] font-medium">{title}</h3>
+        <h3 className="text-[0.8125rem] font-medium">{title}</h3>
         {action}
       </header>
       <div className={cn("p-4", bodyClassName)}>{children}</div>

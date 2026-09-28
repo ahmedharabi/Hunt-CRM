@@ -7,7 +7,7 @@ export function StatusBadge({ status, className }: { status: OpportunityStatus; 
   return (
     <span
       className={cn(
-        "inline-flex h-5 items-center gap-1.5 rounded-full border px-2 text-[11.5px] font-medium whitespace-nowrap",
+        "inline-flex h-5 items-center gap-1.5 rounded-full border px-2 text-[0.71875rem] font-medium whitespace-nowrap",
         className,
       )}
       style={{

@@ -86,7 +86,7 @@ export function TemplateForm({ open, onOpenChange, id, initial }: { open: boolea
                   type="button"
                   title={v.hint}
                   onClick={() => insert(v.key)}
-                  className="rounded-md border bg-muted/40 px-1.5 py-0.5 font-mono text-[11px] text-muted-foreground hover:bg-muted hover:text-foreground"
+                  className="rounded-md border bg-muted/40 px-1.5 py-0.5 font-mono text-[0.6875rem] text-muted-foreground hover:bg-muted hover:text-foreground"
                 >
                   {`{{${v.key}}}`}
                 </button>
@@ -102,7 +102,7 @@ export function TemplateForm({ open, onOpenChange, id, initial }: { open: boolea
               value={field.value ?? ""}
               aria-invalid={invalid}
               rows={9}
-              className="text-[13.5px] leading-relaxed"
+              className="text-[0.84375rem] leading-relaxed"
               placeholder={"Hi {{first_name}},\n\n…"}
             />
             {type === "connection_note" && (
@@ -118,7 +118,7 @@ export function TemplateForm({ open, onOpenChange, id, initial }: { open: boolea
       )}
       <div className="rounded-lg border bg-muted/30">
         <p className="border-b px-3 py-2 text-xs text-muted-foreground">Preview with sample values</p>
-        <div className="px-3 py-3 text-[13.5px] leading-relaxed whitespace-pre-wrap">
+        <div className="px-3 py-3 text-[0.84375rem] leading-relaxed whitespace-pre-wrap">
           {subject && <p className="mb-2 font-medium">{fillTemplate(subject, SAMPLE).text}</p>}
           {body ? fillTemplate(body, SAMPLE).text : <span className="text-muted-foreground">Start typing to see it filled in.</span>}
         </div>

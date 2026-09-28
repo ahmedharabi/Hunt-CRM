@@ -43,7 +43,7 @@ export function ActivityHeatmap({ days }: { days: HeatmapDay[] }) {
             <span
               key={l}
               style={{ gridColumn: 1, gridRow: i + 2 }}
-              className={cn("self-center pr-1.5 text-[10px] leading-none text-muted-foreground", i % 2 === 1 && "invisible")}
+              className={cn("self-center pr-1.5 text-[0.625rem] leading-none text-muted-foreground", i % 2 === 1 && "invisible")}
             >
               {l}
             </span>
@@ -53,7 +53,7 @@ export function ActivityHeatmap({ days }: { days: HeatmapDay[] }) {
             const showMonth = wi === 0 ? Number(first.day.slice(8)) <= 21 : first.day.slice(5, 7) !== weeks[wi - 1][0].day.slice(5, 7);
             return [
               showMonth && (
-                <span key={`m-${first.day}`} style={{ gridColumn: wi + 2, gridRow: 1 }} className="pb-1 text-[10px] whitespace-nowrap text-muted-foreground">
+                <span key={`m-${first.day}`} style={{ gridColumn: wi + 2, gridRow: 1 }} className="pb-1 text-[0.625rem] whitespace-nowrap text-muted-foreground">
                   {formatTz(toDate(first.day), "UTC", "MMM")}
                 </span>
               ),
@@ -110,7 +110,7 @@ function DayDetails({ day: d }: { day: HeatmapDay }) {
       <p className="flex items-center justify-between gap-4">
         <span className="font-medium">{formatTz(toDate(d.day), "UTC", "EEEE, MMM d")}</span>
         {d.met && (
-          <span className="flex items-center gap-0.5 text-[11px] opacity-80">
+          <span className="flex items-center gap-0.5 text-[0.6875rem] opacity-80">
             <Flame className="size-3" /> streak
           </span>
         )}
@@ -131,7 +131,7 @@ function DayDetails({ day: d }: { day: HeatmapDay }) {
         </ul>
       )}
       {d.companies.length > 0 && (
-        <p className="border-t border-background/15 pt-1.5 text-[11px] leading-snug opacity-80">
+        <p className="border-t border-background/15 pt-1.5 text-[0.6875rem] leading-snug opacity-80">
           {d.companies.slice(0, MAX_COMPANIES).join(", ")}
           {extra > 0 && ` +${extra} more`}
         </p>

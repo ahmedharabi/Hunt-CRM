@@ -29,7 +29,7 @@ export function CompanyAvatar({
     <span
       aria-hidden
       className={cn(
-        "inline-flex size-7 shrink-0 items-center justify-center overflow-hidden rounded-md text-[10.5px] font-semibold tracking-tight",
+        "inline-flex size-7 shrink-0 items-center justify-center overflow-hidden rounded-md text-[0.65625rem] font-semibold tracking-tight",
         "bg-[oklch(0.94_0.035_var(--h))] text-[oklch(0.42_0.09_var(--h))] ring-1 ring-[oklch(0.5_0.05_var(--h)/0.14)] ring-inset",
         "dark:bg-[oklch(0.3_0.05_var(--h))] dark:text-[oklch(0.86_0.07_var(--h))] dark:ring-[oklch(0.8_0.05_var(--h)/0.1)]",
         className,

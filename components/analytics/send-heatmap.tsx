@@ -25,13 +25,13 @@ export function SendHeatmap({ cells, weekStartsOn }: { cells: { dow: number; hou
         <div className="inline-grid gap-[3px]" style={{ gridTemplateColumns: `2.25rem repeat(${hourList.length}, minmax(14px, 1fr))` }}>
           <span />
           {hourList.map((h) => (
-            <span key={h} className="tabular text-center text-[10px] text-muted-foreground">
+            <span key={h} className="tabular text-center text-[0.625rem] text-muted-foreground">
               {h % 3 === 0 ? h : ""}
             </span>
           ))}
           {order.map((dow) => (
             <div key={dow} className="contents">
-              <span className="text-[11px] leading-[18px] text-muted-foreground">{DAYS[dow]}</span>
+              <span className="text-[0.6875rem] leading-[18px] text-muted-foreground">{DAYS[dow]}</span>
               {hourList.map((h) => {
                 const c = map.get(`${dow}-${h}`);
                 const rate = c && c.sent ? c.replied / c.sent : 0;

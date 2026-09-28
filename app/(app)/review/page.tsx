@@ -49,7 +49,7 @@ export default async function ReviewPage({ searchParams }: PageProps<"/review">)
     <Page className="max-w-5xl space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="text-[13px] text-muted-foreground">{isCurrent ? "This week" : "Week of"}</p>
+          <p className="text-[0.8125rem] text-muted-foreground">{isCurrent ? "This week" : "Week of"}</p>
           <h2 className="text-2xl font-semibold tracking-[-0.025em]">{label}</h2>
         </div>
         <div className="flex items-center gap-1.5">
@@ -77,7 +77,7 @@ export default async function ReviewPage({ searchParams }: PageProps<"/review">)
         </div>
       </div>
 
-      <p className="rounded-xl border bg-card px-4 py-3.5 text-[14px] leading-relaxed text-foreground/90">{summary.join(" ")}</p>
+      <p className="rounded-xl border bg-card px-4 py-3.5 text-[0.875rem] leading-relaxed text-foreground/90">{summary.join(" ")}</p>
 
       <StatStrip
         items={[
@@ -98,7 +98,7 @@ export default async function ReviewPage({ searchParams }: PageProps<"/review">)
             <ul className="space-y-3">
               {r.goals.map((g) => (
                 <li key={g.type} className="space-y-1.5">
-                  <div className="flex items-center justify-between text-[13px]">
+                  <div className="flex items-center justify-between text-[0.8125rem]">
                     <span className="flex items-center gap-2">
                       {g.hit ? <Trophy className="size-3.5 text-status-accepted" /> : <span className="size-3.5" />}
                       {ACTIVITY_META[g.type].label}
@@ -118,7 +118,7 @@ export default async function ReviewPage({ searchParams }: PageProps<"/review">)
           <div className="mt-5 grid grid-cols-7 gap-1.5" aria-label="Daily goal by day">
             {r.days.map((d) => (
               <div key={d.day} className="text-center">
-                <p className="text-[10px] text-muted-foreground uppercase">{formatTz(new Date(`${d.day}T12:00:00Z`), "UTC", "EEE")}</p>
+                <p className="text-[0.625rem] text-muted-foreground uppercase">{formatTz(new Date(`${d.day}T12:00:00Z`), "UTC", "EEE")}</p>
                 <div
                   className={cn(
                     "tabular mt-1 flex h-9 items-center justify-center rounded-md border text-sm font-medium",
@@ -138,10 +138,10 @@ export default async function ReviewPage({ searchParams }: PageProps<"/review">)
           {r.channels.length ? (
             <ul className="space-y-2.5">
               {r.channels.map((c) => (
-                <li key={c.channel} className="flex items-center justify-between text-[13px]">
+                <li key={c.channel} className="flex items-center justify-between text-[0.8125rem]">
                   <span className="flex items-center gap-2">
                     {CHANNEL_META[c.channel].label}
-                    {r.bestChannel?.channel === c.channel && c.sent >= 3 && <span className="rounded bg-brand-soft px-1.5 py-0.5 text-[10px] text-brand">best</span>}
+                    {r.bestChannel?.channel === c.channel && c.sent >= 3 && <span className="rounded bg-brand-soft px-1.5 py-0.5 text-[0.625rem] text-brand">best</span>}
                   </span>
                   <span className="tabular text-muted-foreground">
                     {c.replied}/{c.sent} replied · <span className="font-medium text-foreground">{pct(c.sent ? c.replied / c.sent : 0)}</span>
@@ -169,7 +169,7 @@ export default async function ReviewPage({ searchParams }: PageProps<"/review">)
                 <li key={x.id} className="flex items-start gap-3 px-4 py-2.5">
                   <ActivityIcon type={x.type} />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-[13px]">
+                    <p className="truncate text-[0.8125rem]">
                       <span className="font-medium">{x.contactName ?? x.companyName}</span>
                       {x.contactName && x.companyName && <span className="text-muted-foreground"> · {x.companyName}</span>}
                     </p>
@@ -189,7 +189,7 @@ export default async function ReviewPage({ searchParams }: PageProps<"/review">)
               {[...advanced, ...closed].map((c) => (
                 <li key={c.id}>
                   <Link href={`/opportunities/${c.opportunityId}`} className="flex items-center gap-2 px-4 py-2.5 hover:bg-muted/50">
-                    <span className="min-w-0 flex-1 truncate text-[13px]">
+                    <span className="min-w-0 flex-1 truncate text-[0.8125rem]">
                       <span className="font-medium">{c.companyName}</span>
                       <span className="text-muted-foreground"> · {c.title}</span>
                     </span>

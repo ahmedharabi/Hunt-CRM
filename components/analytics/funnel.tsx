@@ -13,7 +13,7 @@ export function Funnel({ steps }: { steps: { stage: OpportunityStatus; count: nu
       {steps.map((s, i) => (
         <li key={s.stage}>
           {i > 0 && (
-            <div className="flex items-center gap-1.5 py-1 pl-28 text-[11px] text-muted-foreground">
+            <div className="flex items-center gap-1.5 py-1 pl-28 text-[0.6875rem] text-muted-foreground">
               <ChevronDown className="size-3" />
               <span className="tabular font-medium text-foreground">{s.conversion === null ? "—" : pct(s.conversion)}</span>
               converted

@@ -58,7 +58,7 @@ export function TemplatesView({ templates, stats }: { templates: Template[]; sta
                     <Icon className="size-4" />
                   </span>
                   <div className="min-w-0 flex-1">
-                    <h3 className="truncate text-[14px] font-medium">{t.name}</h3>
+                    <h3 className="truncate text-[0.875rem] font-medium">{t.name}</h3>
                     <p className="text-xs text-muted-foreground">{meta.label}</p>
                   </div>
                   <DropdownMenu>
@@ -84,12 +84,12 @@ export function TemplatesView({ templates, stats }: { templates: Template[]; sta
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </header>
-                <div className="mx-4 mt-3 flex-1 rounded-lg bg-muted/40 px-3 py-2.5 text-[13px] leading-relaxed text-foreground/80">
+                <div className="mx-4 mt-3 flex-1 rounded-lg bg-muted/40 px-3 py-2.5 text-[0.8125rem] leading-relaxed text-foreground/80">
                   {t.subject && <p className="mb-1 truncate font-medium text-foreground">{t.subject}</p>}
                   <p className="line-clamp-5 whitespace-pre-line">
                     {t.body.split(/(\{\{[^}]+\}\})/).map((part, i) =>
                       part.startsWith("{{") ? (
-                        <span key={i} className="rounded bg-brand-soft px-0.5 font-mono text-[12px] text-brand">
+                        <span key={i} className="rounded bg-brand-soft px-0.5 font-mono text-[0.75rem] text-brand">
                           {part}
                         </span>
                       ) : (

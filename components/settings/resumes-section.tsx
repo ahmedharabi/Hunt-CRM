@@ -30,7 +30,7 @@ export function ResumesSection({ resumes }: { resumes: Resume[] }) {
               <li key={r.id} className="flex items-center gap-3 px-4 py-3">
                 <FileText className="size-4 shrink-0 text-muted-foreground" strokeWidth={1.85} />
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-[13.5px] font-medium">{r.name}</p>
+                  <p className="truncate text-[0.84375rem] font-medium">{r.name}</p>
                   <p className="truncate text-xs text-muted-foreground">
                     {r.applications} application{r.applications === 1 ? "" : "s"}
                     {r.description && ` · ${r.description}`}

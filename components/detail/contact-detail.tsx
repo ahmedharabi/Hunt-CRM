@@ -51,13 +51,13 @@ export function ContactDetail({
         <span className="flex size-14 shrink-0 items-center justify-center rounded-full bg-muted text-lg font-semibold text-muted-foreground">{initials}</span>
         <div className="min-w-0 flex-1">
           <h2 className="text-2xl font-semibold tracking-[-0.025em]">{contact.name}</h2>
-          <p className="mt-1 flex flex-wrap items-center gap-x-2 text-[13px] text-muted-foreground">
+          <p className="mt-1 flex flex-wrap items-center gap-x-2 text-[0.8125rem] text-muted-foreground">
             {contact.role && <span>{contact.role}</span>}
             {company && (
               <>
                 {contact.role && <span>at</span>}
                 <Link href={`/companies/${company.id}`} className="inline-flex items-center gap-1.5 font-medium text-foreground hover:underline hover:underline-offset-2">
-                  <CompanyAvatar name={company.name} logoUrl={company.logoUrl} className="size-4 rounded text-[7px]" />
+                  <CompanyAvatar name={company.name} logoUrl={company.logoUrl} className="size-4 rounded text-[0.4375rem]" />
                   {company.name}
                 </Link>
               </>
@@ -121,7 +121,7 @@ export function ContactDetail({
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
         <section className="min-w-0 rounded-xl border bg-card p-4 md:p-5">
-          <h3 className="mb-4 text-[13px] font-medium">Interactions</h3>
+          <h3 className="mb-4 text-[0.8125rem] font-medium">Interactions</h3>
           <Timeline items={timeline} now={now} show={{ contact: false, opportunity: true }} />
         </section>
         <aside className="space-y-4">
@@ -131,7 +131,7 @@ export function ContactDetail({
                 {opportunities.map((o) => (
                   <li key={o.id}>
                     <Link href={`/opportunities/${o.id}`} className="flex items-center justify-between gap-3 px-4 py-2.5 hover:bg-muted/50">
-                      <span className="truncate text-[13px] font-medium">{o.title}</span>
+                      <span className="truncate text-[0.8125rem] font-medium">{o.title}</span>
                       <StatusBadge status={o.status} />
                     </Link>
                   </li>

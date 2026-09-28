@@ -61,7 +61,7 @@ export function ContactsTable({ rows, views, now }: { rows: ContactRow[]; views:
           header: ({ column }) => <SortHeader column={column} title="Name" />,
           cell: ({ row }) => (
             <Link href={`/contacts/${row.original.id}`} className="group/link flex min-w-44 items-center gap-2.5">
-              <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-muted text-[9.5px] font-semibold text-muted-foreground">
+              <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-muted text-[0.59375rem] font-semibold text-muted-foreground">
                 {initials(row.original.name)}
               </span>
               <span className="min-w-0">
@@ -79,7 +79,7 @@ export function ContactsTable({ rows, views, now }: { rows: ContactRow[]; views:
           cell: ({ row }) =>
             row.original.companyId ? (
               <Link href={`/companies/${row.original.companyId}`} className="flex items-center gap-2 whitespace-nowrap hover:underline hover:underline-offset-2">
-                <CompanyAvatar name={row.original.companyName!} className="size-5 rounded text-[8px]" />
+                <CompanyAvatar name={row.original.companyName!} className="size-5 rounded text-[0.5rem]" />
                 {row.original.companyName}
               </Link>
             ) : (

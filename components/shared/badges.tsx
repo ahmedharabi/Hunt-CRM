@@ -7,7 +7,7 @@ export function TierBadge({ tier, className }: { tier: Tier; className?: string 
   return (
     <span
       className={cn(
-        "inline-flex h-5 items-center gap-1 rounded-md px-1.5 text-[11px] font-medium whitespace-nowrap",
+        "inline-flex h-5 items-center gap-1 rounded-md px-1.5 text-[0.6875rem] font-medium whitespace-nowrap",
         tier === "dream" && "bg-brand-soft text-brand",
         tier === "target" && "bg-muted text-foreground/80",
         tier === "backup" && "border border-dashed text-muted-foreground",
@@ -28,7 +28,7 @@ export function Chip({ children, className }: { children: React.ReactNode; class
   return (
     <span
       className={cn(
-        "inline-flex h-5 items-center rounded-md border bg-background px-1.5 text-[11px] whitespace-nowrap text-muted-foreground",
+        "inline-flex h-5 items-center rounded-md border bg-background px-1.5 text-[0.6875rem] whitespace-nowrap text-muted-foreground",
         className,
       )}
     >

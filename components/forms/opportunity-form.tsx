@@ -77,7 +77,7 @@ export function OpportunityForm({
       (lookups?.companies ?? []).map((c) => ({
         value: c.id,
         label: c.name,
-        icon: <CompanyAvatar name={c.name} logoUrl={c.logoUrl} className="size-5 rounded text-[8px]" />,
+        icon: <CompanyAvatar name={c.name} logoUrl={c.logoUrl} className="size-5 rounded text-[0.5rem]" />,
       })),
     [lookups],
   );
@@ -289,10 +289,10 @@ export function OpportunityForm({
         {({ field, id: fid }) => <TagInput id={fid} value={field.value ?? []} onChange={field.onChange} suggestions={lookups?.tags} />}
       </FormField>
       <FormField control={control} name="jobDescription" label="Job description" optional description="Paste the posting — it's searchable and survives the listing being taken down.">
-        {({ field, id: fid }) => <Textarea id={fid} {...field} value={field.value ?? ""} rows={6} className="font-mono text-[13px]" />}
+        {({ field, id: fid }) => <Textarea id={fid} {...field} value={field.value ?? ""} rows={6} className="font-mono text-[0.8125rem]" />}
       </FormField>
       <FormField control={control} name="notes" label="Notes" optional>
-        {({ field, id: fid }) => <Textarea id={fid} {...field} value={field.value ?? ""} rows={4} className="font-mono text-[13px]" />}
+        {({ field, id: fid }) => <Textarea id={fid} {...field} value={field.value ?? ""} rows={4} className="font-mono text-[0.8125rem]" />}
       </FormField>
     </FormSheet>
   );

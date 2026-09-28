@@ -8,6 +8,7 @@ import { AppActionsProvider } from "@/components/quick-log/app-actions";
 import { ensureDailyBackup } from "@/db/backup";
 import { getFollowUpsDueCount } from "@/lib/queries/overview";
 import { getSettings } from "@/lib/queries/settings";
+import { TEXT_SCALE, clampTextScale } from "@/lib/appearance";
 
 export default async function AppLayout({ children }: LayoutProps<"/">) {
   const settings = getSettings();
@@ -18,8 +19,12 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
   const defaultOpen = cookieStore.get("sidebar_state")?.value !== "false";
   const followUps = getFollowUpsDueCount(new Date(), settings.timezone);
 
+  const textScale = clampTextScale(settings.textScale);
+
   return (
     <PrefsProvider value={{ timezone: settings.timezone, weekStartsOn: settings.weekStartsOn }}>
+      {/* Server-rendered so the saved text size applies on first paint. */}
+      {textScale !== TEXT_SCALE.default && <style>{`html{font-size:${textScale}%}`}</style>}
       <LookupsProvider>
         <AppActionsProvider>
           <SidebarProvider defaultOpen={defaultOpen}>

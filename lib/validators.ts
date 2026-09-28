@@ -16,6 +16,7 @@ import {
   TEMPLATE_TYPES,
   TIERS,
 } from "./domain";
+import { TEXT_SCALE } from "./appearance";
 
 /*
  * Shared by react-hook-form (client) and server actions (server).
@@ -228,6 +229,8 @@ export const settingsSchema = z.object({
   streakGoals: goalMap,
 });
 export type SettingsValues = z.output<typeof settingsSchema>;
+
+export const textScaleSchema = z.coerce.number().int().min(TEXT_SCALE.min).max(TEXT_SCALE.max);
 
 export const savedViewSchema = z.object({
   entity: z.enum(["companies", "contacts", "opportunities", "activities"]),

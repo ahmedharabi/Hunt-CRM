@@ -48,7 +48,7 @@ export default function DashboardPage() {
     <Page className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-[13px] text-muted-foreground">{formatTz(now, tz, "EEEE, MMMM d")}</p>
+          <p className="text-[0.8125rem] text-muted-foreground">{formatTz(now, tz, "EEEE, MMMM d")}</p>
           <h2 className="mt-0.5 text-2xl font-semibold tracking-[-0.025em]">{greeting(now, tz)}</h2>
         </div>
         <StreakBadge {...d.streak} />
@@ -65,7 +65,7 @@ export default function DashboardPage() {
 
       <section className="rounded-xl border bg-card p-4">
         <div className="mb-3 flex items-baseline justify-between">
-          <h3 className="text-[13px] font-medium">Today</h3>
+          <h3 className="text-[0.8125rem] font-medium">Today</h3>
           <Link href="/settings" className="text-xs text-muted-foreground hover:text-foreground">
             Edit goals
           </Link>
@@ -81,11 +81,11 @@ export default function DashboardPage() {
         <Stat label="Replies this week" value={d.week.replies} previous={d.week.repliesPrev} />
         <Stat label="Applications" value={d.week.counts.application ?? 0} previous={d.week.lastWeekSameSpan.application ?? 0} />
         <div className="flex flex-col gap-1 px-4 py-4 md:px-5">
-          <span className="flex items-center gap-1.5 text-[12.5px] text-muted-foreground">
+          <span className="flex items-center gap-1.5 text-[0.78125rem] text-muted-foreground">
             <LinkedInIcon className="size-3.5" />
             Connections this week
           </span>
-          <span className="tabular text-[28px] leading-none font-semibold tracking-[-0.03em]">
+          <span className="tabular text-[1.75rem] leading-none font-semibold tracking-[-0.03em]">
             {d.linkedin.sent}
             <span className="text-base font-normal text-muted-foreground">/{d.linkedin.limit}</span>
           </span>
@@ -103,7 +103,7 @@ export default function DashboardPage() {
           title={
             <span className="flex items-center gap-2">
               Follow-ups
-              {dueNow.length > 0 && <span className="tabular rounded-full bg-brand-soft px-1.5 text-[11px] text-brand">{dueNow.length} due</span>}
+              {dueNow.length > 0 && <span className="tabular rounded-full bg-brand-soft px-1.5 text-[0.6875rem] text-brand">{dueNow.length} due</span>}
             </span>
           }
           action={
@@ -156,11 +156,11 @@ export default function DashboardPage() {
                 <li key={`${u.kind}-${u.id}`}>
                   <Link href={`/opportunities/${u.kind === "interview" ? u.opportunityId : u.id}`} className="flex items-center gap-3 px-4 py-2.5 hover:bg-muted/50">
                     <div className="flex w-10 shrink-0 flex-col items-center rounded-md border py-1 leading-none">
-                      <span className="text-[10px] font-medium text-muted-foreground uppercase">{formatTz(u.at, tz, "EEE")}</span>
+                      <span className="text-[0.625rem] font-medium text-muted-foreground uppercase">{formatTz(u.at, tz, "EEE")}</span>
                       <span className="tabular mt-0.5 text-base font-semibold">{formatTz(u.at, tz, "d")}</span>
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-[13.5px] font-medium">{u.companyName}</p>
+                      <p className="truncate text-[0.84375rem] font-medium">{u.companyName}</p>
                       <p className="flex items-center gap-1.5 truncate text-xs text-muted-foreground">
                         {u.kind === "interview" ? (
                           <>
@@ -185,7 +185,7 @@ export default function DashboardPage() {
 
       <section className="rounded-xl border bg-card p-4 md:p-5">
         <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
-          <h3 className="text-[13px] font-medium">Last 6 months</h3>
+          <h3 className="text-[0.8125rem] font-medium">Last 6 months</h3>
           {weeklyTargets.length > 0 && (
             <p className="flex flex-wrap gap-x-3 text-xs text-muted-foreground">
               This week:
@@ -219,7 +219,7 @@ export default function DashboardPage() {
                   <Link href={href as "/"} className="flex items-center gap-3 px-4 py-2.5 hover:bg-muted/50">
                     <ActivityIcon type={a.type} />
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-[13.5px]">
+                      <p className="truncate text-[0.84375rem]">
                         <span className="font-medium">{a.direction === "inbound" ? "Reply received" : ACTIVITY_META[a.type].label}</span>
                         {who && <span className="text-muted-foreground"> · {who}</span>}
                       </p>
@@ -245,8 +245,8 @@ function Stat({ label, value, previous }: { label: string; value: number; previo
   const Icon = change > 0 ? ArrowUpRight : change < 0 ? ArrowDownRight : Minus;
   return (
     <div className="flex flex-col gap-1 px-4 py-4 md:px-5">
-      <span className="text-[12.5px] text-muted-foreground">{label}</span>
-      <span className="tabular text-[28px] leading-none font-semibold tracking-[-0.03em]">{value}</span>
+      <span className="text-[0.78125rem] text-muted-foreground">{label}</span>
+      <span className="tabular text-[1.75rem] leading-none font-semibold tracking-[-0.03em]">{value}</span>
       <span className="inline-flex items-center gap-1 text-xs text-muted-foreground" title="Compared with the same days last week">
         <span className={cn("tabular inline-flex items-center font-medium", change > 0 && "text-status-accepted", change < 0 && "text-status-rejected")}>
           <Icon className="size-3.5" strokeWidth={2.25} />
@@ -278,7 +278,7 @@ function Pipeline({ pipeline }: { pipeline: Record<OpportunityStatus, number> })
       </div>
       <ul className="mt-4 space-y-2">
         {ACTIVE_STATUSES.map((s) => (
-          <li key={s} className="flex items-center justify-between text-[13px]">
+          <li key={s} className="flex items-center justify-between text-[0.8125rem]">
             <span className="flex items-center gap-2 text-muted-foreground">
               <span className="size-2 rounded-[3px]" style={{ backgroundColor: STATUS_META[s].color }} />
               {STATUS_META[s].label}

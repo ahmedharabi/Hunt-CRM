@@ -70,7 +70,7 @@ export function OpportunitiesTable({ rows, views, now }: { rows: OpportunityRow[
           header: ({ column }) => <SortHeader column={column} title="Role" />,
           cell: ({ row }) => (
             <Link href={`/opportunities/${row.original.id}`} className="group/link flex min-w-56 items-center gap-2.5">
-              <CompanyAvatar name={row.original.companyName} logoUrl={row.original.companyLogo} className="size-6 text-[9px]" />
+              <CompanyAvatar name={row.original.companyName} logoUrl={row.original.companyLogo} className="size-6 text-[0.5625rem]" />
               <span className="min-w-0">
                 <span className="block truncate font-medium group-hover/link:underline group-hover/link:underline-offset-2">{row.original.title}</span>
                 <span className="block truncate text-xs text-muted-foreground">{row.original.companyName}</span>

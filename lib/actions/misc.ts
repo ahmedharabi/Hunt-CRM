@@ -15,6 +15,7 @@ import {
   savedViewSchema,
   settingsSchema,
   templateSchema,
+  textScaleSchema,
   weeklyNotesSchema,
   type TemplateInput,
 } from "@/lib/validators";
@@ -39,6 +40,14 @@ export async function saveSettings(input: unknown) {
   return run(() => {
     const values = settingsSchema.parse(input);
     getDb().update(s.settings).set(values).where(eq(s.settings.id, 1)).run();
+    return null;
+  });
+}
+
+export async function saveTextScale(input: unknown) {
+  return run(() => {
+    const textScale = textScaleSchema.parse(input);
+    getDb().update(s.settings).set({ textScale }).where(eq(s.settings.id, 1)).run();
     return null;
   });
 }

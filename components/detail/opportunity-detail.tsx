@@ -80,7 +80,7 @@ export function OpportunityDetail({ opportunity: o, timeline, now }: { opportuni
         <CompanyAvatar name={o.company.name} logoUrl={o.company.logoUrl} className="size-14 rounded-xl text-lg" />
         <div className="min-w-0 flex-1">
           <h2 className="text-2xl font-semibold tracking-[-0.025em]">{o.title}</h2>
-          <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-muted-foreground">
+          <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[0.8125rem] text-muted-foreground">
             <Link href={`/companies/${o.company.id}`} className="font-medium text-foreground hover:underline hover:underline-offset-2">
               {o.company.name}
             </Link>
@@ -162,13 +162,13 @@ export function OpportunityDetail({ opportunity: o, timeline, now }: { opportuni
                     <li key={iv.id}>
                       <button type="button" onClick={() => setInterview({ open: true, item: iv })} className="flex w-full items-start gap-3 px-4 py-3 text-left hover:bg-muted/50">
                         <div className="flex w-11 shrink-0 flex-col items-center rounded-md border py-1 leading-none">
-                          <span className="text-[10px] font-medium text-muted-foreground uppercase">{formatTz(iv.scheduledAt, timezone, "MMM")}</span>
+                          <span className="text-[0.625rem] font-medium text-muted-foreground uppercase">{formatTz(iv.scheduledAt, timezone, "MMM")}</span>
                           <span className="tabular mt-0.5 text-base font-semibold">{formatTz(iv.scheduledAt, timezone, "d")}</span>
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="flex items-center gap-2 text-[13.5px] font-medium">
+                          <p className="flex items-center gap-2 text-[0.84375rem] font-medium">
                             {INTERVIEW_STAGE_META[iv.stage].label}
-                            {upcoming && <span className="rounded bg-brand-soft px-1.5 py-0.5 text-[10px] text-brand">upcoming</span>}
+                            {upcoming && <span className="rounded bg-brand-soft px-1.5 py-0.5 text-[0.625rem] text-brand">upcoming</span>}
                           </p>
                           <p className="mt-0.5 flex flex-wrap items-center gap-x-3 text-xs text-muted-foreground">
                             <span>
@@ -228,7 +228,7 @@ export function OpportunityDetail({ opportunity: o, timeline, now }: { opportuni
               </Button>
             }
           >
-            <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-[13px]">
+            <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-[0.8125rem]">
               {details
                 .filter(([, v]) => v !== null && v !== undefined && v !== "")
                 .map(([k, v]) => (
@@ -245,7 +245,7 @@ export function OpportunityDetail({ opportunity: o, timeline, now }: { opportuni
                 {o.contacts.map((c) => (
                   <li key={c.id}>
                     <Link href={`/contacts/${c.id}`} className="block px-4 py-2.5 hover:bg-muted/50">
-                      <span className="block truncate text-[13px] font-medium">{c.name}</span>
+                      <span className="block truncate text-[0.8125rem] font-medium">{c.name}</span>
                       {c.role && <span className="block truncate text-xs text-muted-foreground">{c.role}</span>}
                     </Link>
                   </li>

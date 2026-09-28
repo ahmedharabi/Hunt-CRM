@@ -38,7 +38,7 @@ export function ChartCard({
   return (
     <section className={cn("flex flex-col rounded-xl border bg-card", className)}>
       <header className="flex items-center gap-1.5 px-4 pt-3.5 pb-2">
-        <h3 className="text-[13px] font-medium">{title}</h3>
+        <h3 className="text-[0.8125rem] font-medium">{title}</h3>
         <Tooltip>
           <TooltipTrigger asChild>
             <button type="button" className="rounded p-0.5 text-muted-foreground/70 hover:text-foreground" aria-label={`About ${title}`}>
@@ -50,7 +50,7 @@ export function ChartCard({
         {small && (
           <Tooltip>
             <TooltipTrigger asChild>
-              <span className="ml-1 inline-flex items-center gap-1 rounded-md bg-status-withdrawn/12 px-1.5 py-0.5 text-[11px] text-status-withdrawn">
+              <span className="ml-1 inline-flex items-center gap-1 rounded-md bg-status-withdrawn/12 px-1.5 py-0.5 text-[0.6875rem] text-status-withdrawn">
                 <TriangleAlert className="size-3" />
                 n={sample}
               </span>

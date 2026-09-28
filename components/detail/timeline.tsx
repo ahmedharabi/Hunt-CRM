@@ -56,7 +56,7 @@ export function Timeline({
         <li key={g.day}>
           <h4 className="mb-2 text-xs font-medium text-muted-foreground">
             {g.day === today ? "Today" : g.day === yesterday ? "Yesterday" : formatTz(g.items[0].at, timezone, g.day > today ? "EEEE, MMM d" : "EEEE, MMM d, yyyy")}
-            {g.day > today && <span className="ml-1.5 rounded bg-brand-soft px-1.5 py-0.5 text-[10px] text-brand">upcoming</span>}
+            {g.day > today && <span className="ml-1.5 rounded bg-brand-soft px-1.5 py-0.5 text-[0.625rem] text-brand">upcoming</span>}
           </h4>
           <ol className="relative space-y-1 before:absolute before:top-3 before:bottom-3 before:left-[13px] before:w-px before:bg-border">
             {g.items.map((item) => (
@@ -80,7 +80,7 @@ function TimelineRow({ item, show, now }: { item: TimelineItem; show: { company?
         <span className="relative z-10 flex size-7 shrink-0 items-center justify-center">
           <span className="size-2 rounded-full bg-muted-foreground/40 ring-4 ring-background" />
         </span>
-        <p className="flex min-w-0 flex-wrap items-center gap-1.5 text-[13px] text-muted-foreground">
+        <p className="flex min-w-0 flex-wrap items-center gap-1.5 text-[0.8125rem] text-muted-foreground">
           {item.from ? <StatusBadge status={item.from} /> : <span>Created as</span>}
           {item.from && <ArrowRight className="size-3.5" />}
           <StatusBadge status={item.to} />
@@ -107,7 +107,7 @@ function TimelineRow({ item, show, now }: { item: TimelineItem; show: { company?
           <Video className="size-3.5" />
         </span>
         <div className="min-w-0 flex-1">
-          <p className="text-[13.5px]">
+          <p className="text-[0.84375rem]">
             <span className="font-medium">{INTERVIEW_STAGE_META[item.stage].label} interview</span>
             <span className="text-muted-foreground"> · {item.durationMinutes} min</span>
           </p>
@@ -149,7 +149,7 @@ function TimelineRow({ item, show, now }: { item: TimelineItem; show: { company?
         <ActivityIcon type={item.type} className="relative z-10 ring-4 ring-background" />
       )}
       <div className="min-w-0 flex-1">
-        <p className="text-[13.5px]">
+        <p className="text-[0.84375rem]">
           <span className="font-medium">{inbound ? "Reply received" : meta.label}</span>
           {context.map((c) => (
             <span key={c.href} className="text-muted-foreground">
@@ -160,8 +160,8 @@ function TimelineRow({ item, show, now }: { item: TimelineItem; show: { company?
             </span>
           ))}
         </p>
-        {item.subject && <p className="mt-0.5 text-[13px] text-foreground/85">{item.subject}</p>}
-        {item.summary && <p className="mt-0.5 line-clamp-3 text-[13px] whitespace-pre-line text-muted-foreground">{item.summary}</p>}
+        {item.subject && <p className="mt-0.5 text-[0.8125rem] text-foreground/85">{item.subject}</p>}
+        {item.summary && <p className="mt-0.5 line-clamp-3 text-[0.8125rem] whitespace-pre-line text-muted-foreground">{item.summary}</p>}
         {!inbound && item.type !== "note" && item.type !== "interview" && (
           <p className="mt-1 flex flex-wrap items-center gap-x-3 text-xs text-muted-foreground">
             <span className="inline-flex items-center gap-1">

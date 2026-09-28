@@ -109,7 +109,7 @@ export function UseTemplateDialog({
         </DialogHeader>
         <div className="grid gap-3 px-5 py-4 sm:grid-cols-3">
           <div className="space-y-1.5">
-            <Label htmlFor="ut-template" className="text-[13px]">Template</Label>
+            <Label htmlFor="ut-template" className="text-[0.8125rem]">Template</Label>
             <SelectField
               id="ut-template"
               value={template ? String(template.id) : ""}
@@ -119,7 +119,7 @@ export function UseTemplateDialog({
             />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="ut-contact" className="text-[13px]">To</Label>
+            <Label htmlFor="ut-contact" className="text-[0.8125rem]">To</Label>
             <EntityCombobox
               id="ut-contact"
               options={(lookups?.contacts ?? []).map((c) => ({ value: c.id, label: c.name, hint: lookups?.companies.find((x) => x.id === c.companyId)?.name }))}
@@ -132,7 +132,7 @@ export function UseTemplateDialog({
             />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="ut-role" className="text-[13px]">Role</Label>
+            <Label htmlFor="ut-role" className="text-[0.8125rem]">Role</Label>
             <SelectField
               id="ut-role"
               value={opportunityId ? String(opportunityId) : ""}
@@ -149,7 +149,7 @@ export function UseTemplateDialog({
               <span>Preview</span>
               {company?.timezone && <CompanyLocalTime timezone={company.timezone} />}
             </div>
-            <div className="max-h-72 overflow-y-auto px-3 py-3 text-[13.5px] leading-relaxed whitespace-pre-wrap select-text">
+            <div className="max-h-72 overflow-y-auto px-3 py-3 text-[0.84375rem] leading-relaxed whitespace-pre-wrap select-text">
               {template ? (
                 <>
                   {filled.subject && (
@@ -171,7 +171,7 @@ export function UseTemplateDialog({
           )}
         </div>
         <DialogFooter className="m-0 items-center rounded-none border-t px-5 py-3">
-          <label className="mr-auto flex cursor-pointer items-center gap-2 text-[13px] text-muted-foreground select-none">
+          <label className="mr-auto flex cursor-pointer items-center gap-2 text-[0.8125rem] text-muted-foreground select-none">
             <Checkbox checked={logIt} onCheckedChange={(v) => setLogIt(v === true)} disabled={!contact} />
             Log as sent
           </label>
@@ -190,7 +190,7 @@ function Highlighted({ text }: { text: string }) {
     <>
       {text.split(/(\{\{[^}]+\}\})/).map((part, i) =>
         part.startsWith("{{") ? (
-          <mark key={i} className="rounded bg-status-withdrawn/15 px-0.5 font-mono text-[12px] text-status-withdrawn">
+          <mark key={i} className="rounded bg-status-withdrawn/15 px-0.5 font-mono text-[0.75rem] text-status-withdrawn">
             {part}
           </mark>
         ) : (

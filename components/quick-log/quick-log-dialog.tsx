@@ -124,7 +124,7 @@ export function QuickLogDialog({
         value: c.id,
         label: c.name,
         hint: c.tier === "dream" ? "dream" : null,
-        icon: <CompanyAvatar name={c.name} logoUrl={c.logoUrl} className="size-5 rounded text-[8px]" />,
+        icon: <CompanyAvatar name={c.name} logoUrl={c.logoUrl} className="size-5 rounded text-[0.5rem]" />,
       })),
     [lookups],
   );
@@ -252,7 +252,7 @@ export function QuickLogDialog({
         }}
       >
         <DialogHeader className="px-4 pt-4 pb-3">
-          <DialogTitle className="text-[15px]">Log activity</DialogTitle>
+          <DialogTitle className="text-[0.9375rem]">Log activity</DialogTitle>
           <DialogDescription className="sr-only">Record a touchpoint with a company or contact.</DialogDescription>
         </DialogHeader>
 
@@ -273,13 +273,13 @@ export function QuickLogDialog({
                 aria-checked={active}
                 onClick={() => set({ type: t, templateId: null })}
                 className={cn(
-                  "flex h-8 shrink-0 items-center gap-1.5 rounded-md px-2.5 text-[12.5px] font-medium whitespace-nowrap transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                  "flex h-8 shrink-0 items-center gap-1.5 rounded-md px-2.5 text-[0.78125rem] font-medium whitespace-nowrap transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring",
                   active ? "bg-background text-foreground shadow-xs ring-1 ring-border" : "text-muted-foreground hover:text-foreground",
                 )}
               >
                 <Icon className="size-3.5" style={{ color: active ? meta.color : undefined }} strokeWidth={2} />
                 {meta.short}
-                {SHORTCUT[t] && !active && <span className="hidden font-mono text-[10px] text-muted-foreground/70 sm:inline">{SHORTCUT[t]}</span>}
+                {SHORTCUT[t] && !active && <span className="hidden font-mono text-[0.625rem] text-muted-foreground/70 sm:inline">{SHORTCUT[t]}</span>}
               </button>
             );
           })}
@@ -289,7 +289,7 @@ export function QuickLogDialog({
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <Label htmlFor="ql-company" className="text-[13px]">Company</Label>
+                <Label htmlFor="ql-company" className="text-[0.8125rem]">Company</Label>
                 {company?.timezone && <CompanyLocalTime timezone={company.timezone} compact />}
               </div>
               <EntityCombobox
@@ -306,7 +306,7 @@ export function QuickLogDialog({
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="ql-contact" className="text-[13px]">
+              <Label htmlFor="ql-contact" className="text-[0.8125rem]">
                 Contact <span className="font-normal text-muted-foreground">optional</span>
               </Label>
               <EntityCombobox
@@ -325,7 +325,7 @@ export function QuickLogDialog({
           {s.type === "cold_email" && (
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-1.5">
-                <Label htmlFor="ql-email" className="text-[13px]">
+                <Label htmlFor="ql-email" className="text-[0.8125rem]">
                   Email <span className="font-normal text-muted-foreground">optional</span>
                 </Label>
                 <Input
@@ -338,7 +338,7 @@ export function QuickLogDialog({
                 />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="ql-website" className="text-[13px]">
+                <Label htmlFor="ql-website" className="text-[0.8125rem]">
                   Company website <span className="font-normal text-muted-foreground">optional</span>
                 </Label>
                 <Input
@@ -362,7 +362,7 @@ export function QuickLogDialog({
 
           {(s.type === "follow_up" || s.direction === "inbound") && (
             <div className="space-y-1.5">
-              <Label htmlFor="ql-thread" className="text-[13px]">
+              <Label htmlFor="ql-thread" className="text-[0.8125rem]">
                 {s.direction === "inbound" ? "Reply to" : "Following up on"}
               </Label>
               <EntityCombobox
@@ -378,7 +378,7 @@ export function QuickLogDialog({
 
           {s.type === "application" ? (
             s.opportunityId ? (
-              <p className="text-[13px] text-muted-foreground">
+              <p className="text-[0.8125rem] text-muted-foreground">
                 Applying to{" "}
                 <span className="font-medium text-foreground">
                   {lookups?.opportunities.find((o) => o.id === s.opportunityId)?.title ?? "this role"}
@@ -387,7 +387,7 @@ export function QuickLogDialog({
             ) : (
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="space-y-1.5">
-                  <Label htmlFor="ql-role" className="text-[13px]">Role title</Label>
+                  <Label htmlFor="ql-role" className="text-[0.8125rem]">Role title</Label>
                   <Input
                     id="ql-role"
                     value={s.newOpportunityTitle}
@@ -397,7 +397,7 @@ export function QuickLogDialog({
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="ql-country" className="text-[13px]">
+                  <Label htmlFor="ql-country" className="text-[0.8125rem]">
                     Country <span className="font-normal text-muted-foreground">optional</span>
                   </Label>
                   <Input
@@ -414,7 +414,7 @@ export function QuickLogDialog({
             s.type !== "follow_up" &&
             opportunityOptions.length > 0 && (
               <div className="space-y-1.5">
-                <Label htmlFor="ql-opp" className="text-[13px]">
+                <Label htmlFor="ql-opp" className="text-[0.8125rem]">
                   Opportunity <span className="font-normal text-muted-foreground">optional</span>
                 </Label>
                 <EntityCombobox
@@ -430,7 +430,7 @@ export function QuickLogDialog({
 
           {isEmailish && (
             <div className="space-y-1.5">
-              <Label htmlFor="ql-subject" className="text-[13px]">
+              <Label htmlFor="ql-subject" className="text-[0.8125rem]">
                 Subject <span className="font-normal text-muted-foreground">optional</span>
               </Label>
               <Input id="ql-subject" value={s.subject} onChange={(e) => set({ subject: e.target.value })} className="h-9" />
@@ -438,7 +438,7 @@ export function QuickLogDialog({
           )}
 
           <div className="space-y-1.5">
-            <Label htmlFor="ql-summary" className="text-[13px]">
+            <Label htmlFor="ql-summary" className="text-[0.8125rem]">
               Notes <span className="font-normal text-muted-foreground">optional</span>
             </Label>
             <Textarea
@@ -453,11 +453,11 @@ export function QuickLogDialog({
 
           <div className="grid gap-3 sm:grid-cols-[1fr_1fr_auto]">
             <div className="space-y-1.5">
-              <Label htmlFor="ql-when" className="text-[13px]">When</Label>
+              <Label htmlFor="ql-when" className="text-[0.8125rem]">When</Label>
               <DateTimeInput id="ql-when" value={s.occurredAt ?? new Date()} onChange={(d) => set({ occurredAt: d })} className="h-9" />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="ql-template" className="text-[13px]">
+              <Label htmlFor="ql-template" className="text-[0.8125rem]">
                 Template <span className="font-normal text-muted-foreground">optional</span>
               </Label>
               <SelectField
@@ -470,7 +470,7 @@ export function QuickLogDialog({
               />
             </div>
             <div className="space-y-1.5">
-              <span className="text-[13px] font-medium">Direction</span>
+              <span className="text-[0.8125rem] font-medium">Direction</span>
               <div className="flex h-9 rounded-lg border p-0.5">
                 {(["outbound", "inbound"] as const).map((d) => (
                   <button
@@ -506,7 +506,7 @@ export function QuickLogDialog({
         </div>
 
         <div className="flex items-center justify-between gap-3 border-t bg-muted/40 px-4 py-3">
-          <label className="flex cursor-pointer items-center gap-2 text-[13px] text-muted-foreground select-none">
+          <label className="flex cursor-pointer items-center gap-2 text-[0.8125rem] text-muted-foreground select-none">
             <Checkbox checked={another} onCheckedChange={(v) => setAnother(v === true)} />
             Log another
           </label>

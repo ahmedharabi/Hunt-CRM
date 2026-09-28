@@ -267,7 +267,7 @@ function BoardColumn({
     >
       <header className="flex h-10 items-center gap-2 px-3">
         <span className="size-2 rounded-full" style={{ backgroundColor: meta.color }} />
-        <h3 className="text-[13px] font-medium">{label}</h3>
+        <h3 className="text-[0.8125rem] font-medium">{label}</h3>
         <span className="tabular text-xs text-muted-foreground">{ids.length}</span>
         {blocked && dragging && <Ban className="ml-auto size-3.5 text-muted-foreground" aria-label="Not allowed from here" />}
       </header>
@@ -319,7 +319,7 @@ function Card({ row, now, overlay }: { row: OpportunityRow; now: number; overlay
         <div className="min-w-0 flex-1">
           <Link
             href={`/opportunities/${row.id}`}
-            className="line-clamp-2 text-[13px] leading-snug font-medium hover:underline hover:underline-offset-2"
+            className="line-clamp-2 text-[0.8125rem] leading-snug font-medium hover:underline hover:underline-offset-2"
             onPointerDown={(e) => e.stopPropagation()}
             draggable={false}
           >
@@ -331,11 +331,11 @@ function Card({ row, now, overlay }: { row: OpportunityRow; now: number; overlay
       <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
         <TierBadge tier={row.companyTier} />
         {columnOf(row.status) !== row.status && (
-          <span className="rounded-md px-1.5 py-0.5 text-[11px]" style={{ color: STATUS_META[row.status].color, backgroundColor: `color-mix(in oklab, ${STATUS_META[row.status].color} 12%, transparent)` }}>
+          <span className="rounded-md px-1.5 py-0.5 text-[0.6875rem]" style={{ color: STATUS_META[row.status].color, backgroundColor: `color-mix(in oklab, ${STATUS_META[row.status].color} 12%, transparent)` }}>
             {STATUS_META[row.status].label}
           </span>
         )}
-        <span className={cn("tabular rounded-md px-1.5 py-0.5 text-[11px]", stale ? "bg-status-withdrawn/12 text-status-withdrawn" : "text-muted-foreground")} title="Days in this stage">
+        <span className={cn("tabular rounded-md px-1.5 py-0.5 text-[0.6875rem]", stale ? "bg-status-withdrawn/12 text-status-withdrawn" : "text-muted-foreground")} title="Days in this stage">
           {days}d in stage
         </span>
         <PriorityBars priority={row.priority} className="ml-auto" />

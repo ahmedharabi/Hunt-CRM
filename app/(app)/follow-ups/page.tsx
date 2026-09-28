@@ -57,7 +57,7 @@ export default function FollowUpsPage() {
           {sections.map((s) =>
             s.items.length ? (
               <section key={s.key} className="overflow-hidden rounded-xl border bg-card">
-                <h3 className="flex h-10 items-center gap-2 border-b bg-muted/30 px-4 text-[13px] font-medium">
+                <h3 className="flex h-10 items-center gap-2 border-b bg-muted/30 px-4 text-[0.8125rem] font-medium">
                   <span className={cn("size-1.5 rounded-full", s.accent ? "bg-brand" : "bg-muted-foreground/50")} />
                   {s.title}
                   <span className="tabular text-muted-foreground">{s.items.length}</span>

@@ -23,7 +23,7 @@ export function FilterMenu({
         <Button variant="outline" size="sm" className={cn("h-8 border-dashed", value.length && "border-solid")}>
           {!value.length && <Plus data-icon="inline-start" />}
           {title}
-          {value.length > 0 && <span className="rounded bg-muted px-1.5 text-[11px]">{value.length}</span>}
+          {value.length > 0 && <span className="rounded bg-muted px-1.5 text-[0.6875rem]">{value.length}</span>}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-52 p-0" align="start">
