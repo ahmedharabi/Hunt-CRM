@@ -129,7 +129,7 @@ export function CommandPalette({ open, onOpenChange, actions }: { open: boolean;
             </CommandGroup>
           )}
           {opps.length > 0 && (
-            <CommandGroup heading="Opportunities">
+            <CommandGroup heading="Applications">
               {opps.map((o) => (
                 <CommandItem key={`o${o.id}`} value={`opp-${o.id}`} onSelect={() => go(`/opportunities/${o.id}`)}>
                   <Briefcase />

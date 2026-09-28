@@ -7,6 +7,7 @@ import {
   FileText,
   Inbox,
   LayoutGrid,
+  Mail,
   Settings2,
   SquareKanban,
   UsersRound,
@@ -21,6 +22,8 @@ export const NAV: { label?: string; items: NavItem[] }[] = [
     items: [
       { title: "Dashboard", href: "/", icon: LayoutGrid },
       { title: "Pipeline", href: "/pipeline", icon: SquareKanban },
+      { title: "Applications", href: "/opportunities", icon: Briefcase },
+      { title: "Emails", href: "/emails", icon: Mail },
       { title: "Follow-ups", href: "/follow-ups", icon: Inbox },
     ],
   },
@@ -29,7 +32,6 @@ export const NAV: { label?: string; items: NavItem[] }[] = [
     items: [
       { title: "Companies", href: "/companies", icon: Building2 },
       { title: "Contacts", href: "/contacts", icon: UsersRound },
-      { title: "Opportunities", href: "/opportunities", icon: Briefcase },
       { title: "Activities", href: "/activities", icon: Activity },
     ],
   },

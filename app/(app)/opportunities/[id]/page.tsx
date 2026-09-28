@@ -15,7 +15,7 @@ export default async function OpportunityPage({ params }: PageProps<"/opportunit
   if (!data) notFound();
   return (
     <Page>
-      <BackLink href="/opportunities">Opportunities</BackLink>
+      <BackLink href="/opportunities">Applications</BackLink>
       <OpportunityDetail {...data} now={new Date().getTime()} />
     </Page>
   );

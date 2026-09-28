@@ -256,7 +256,7 @@ export function OpportunitiesTable({ rows, views, now }: { rows: OpportunityRow[
       primaryAction={
         <Button size="sm" className="h-8" onClick={() => addOpportunity()}>
           <Plus data-icon="inline-start" />
-          Opportunity
+          Application
         </Button>
       }
       bulkActions={(sel, clear) => (

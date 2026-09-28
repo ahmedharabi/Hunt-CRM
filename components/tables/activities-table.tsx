@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import Link from "next/link";
 import { createColumnHelper } from "@tanstack/react-table";
-import { Activity, ArrowDownLeft, MoreHorizontal, Plus } from "lucide-react";
+import { Activity, ArrowDownLeft, Mail, MoreHorizontal, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -58,7 +58,18 @@ export function OutcomePill({ outcome }: { outcome: keyof typeof OUTCOME_META })
   );
 }
 
-export function ActivitiesTable({ rows, views, now }: { rows: ActivityRow[]; views: SavedView[]; now: number }) {
+export function ActivitiesTable({
+  rows,
+  views,
+  now,
+  emailsOnly = false,
+}: {
+  rows: ActivityRow[];
+  views: SavedView[];
+  now: number;
+  /** The Emails page: rows are already filtered to the email channel. */
+  emailsOnly?: boolean;
+}) {
   const { quickLog } = useAppActions();
   const thread = useThreadActions();
   const data = useMemo<Row[]>(
@@ -227,11 +238,11 @@ export function ActivitiesTable({ rows, views, now }: { rows: ActivityRow[]; vie
       columns={columns}
       getRowId={(r) => String(r.id)}
       searchPlaceholder="Search messages, companies, people…"
-      defaultVisibility={{ opportunityTitle: false, templateName: false, waiting: false, isRoot: false, direction: false }}
+      defaultVisibility={{ opportunityTitle: false, templateName: false, waiting: false, isRoot: false, direction: false, channel: !emailsOnly }}
       defaultSorting={[{ id: "occurredAt", desc: true }]}
       facets={[
         { columnId: "type", title: "Type", options: options(ACTIVITY_META) },
-        { columnId: "channel", title: "Channel", options: options(CHANNEL_META) },
+        ...(emailsOnly ? [] : [{ columnId: "channel", title: "Channel", options: options(CHANNEL_META) }]),
         { columnId: "outcome", title: "Outcome", options: options(OUTCOME_META) },
         {
           columnId: "direction",
@@ -252,7 +263,7 @@ export function ActivitiesTable({ rows, views, now }: { rows: ActivityRow[]; vie
       ]}
       views={[...BUILT_IN, ...views.map((v) => ({ id: v.id, name: v.name, state: v.state }))]}
       csv={{
-        filename: "activities",
+        filename: emailsOnly ? "emails" : "activities",
         columns: [
           { header: "Type", value: (r) => r.type },
           { header: "Direction", value: (r) => r.direction },
@@ -271,17 +282,17 @@ export function ActivitiesTable({ rows, views, now }: { rows: ActivityRow[]; vie
       }}
       importable
       primaryAction={
-        <Button size="sm" className="h-8" onClick={() => quickLog()}>
+        <Button size="sm" className="h-8" onClick={() => quickLog(emailsOnly ? { type: "cold_email" } : undefined)}>
           <Plus data-icon="inline-start" />
-          Log
+          {emailsOnly ? "Log email" : "Log"}
         </Button>
       }
       bulkActions={(sel, clear) => <BulkOutcomeButton ids={sel.map((r) => r.id)} onDone={clear} />}
       onDeleteRows={(sel, clear) => deleteWithUndo("activities", sel.map((r) => r.id), plural(sel.length, "activity", "activities"), clear)}
       empty={
         <EmptyState
-          icon={Activity}
-          title="Nothing logged yet"
+          icon={emailsOnly ? Mail : Activity}
+          title={emailsOnly ? "No emails yet" : "Nothing logged yet"}
           description={
             <>
               Every application, DM and follow-up lands here. Press <kbd className="rounded border px-1 font-mono text-xs">E</kbd> anywhere to log a cold
