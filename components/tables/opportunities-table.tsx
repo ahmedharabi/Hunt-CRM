@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import Link from "next/link";
 import { createColumnHelper } from "@tanstack/react-table";
-import { Briefcase, ExternalLink, MoreHorizontal, Plus } from "lucide-react";
+import { Briefcase, Copy, ExternalLink, MoreHorizontal, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { DataTable, SortHeader, selectColumn, type TableView } from "@/components/data-table/data-table";
@@ -18,6 +18,7 @@ import { EmptyState } from "@/components/shared/empty-state";
 import { useAppActions } from "@/components/quick-log/app-actions";
 import { deleteWithUndo, plural } from "@/lib/client/mutate";
 import type { OpportunityRow } from "@/lib/queries/records";
+import type { OpportunityInput } from "@/lib/validators";
 import type { SavedView } from "@/db/schema";
 import { ACTIVE_STATUSES, OPPORTUNITY_STATUSES } from "@/lib/domain";
 import { EMPLOYMENT_META, REMOTE_META, SOURCE_META, STATUS_META, TIER_META, options } from "@/lib/meta";
@@ -29,6 +30,21 @@ const helper = createColumnHelper<typeof features, Row>();
 const DAY = 86_400_000;
 /** When you applied; wishlist roles fall back to when they were added. */
 const appliedOrAdded = (r: Row) => r.appliedAt ?? r.createdAt;
+
+/** A new application prefilled from `r`: same company and setup, blank role and link. */
+function similarRole(r: Row): Partial<OpportunityInput> {
+  return {
+    companyId: r.companyId,
+    status: "applied",
+    employmentType: r.employmentType,
+    workMode: r.workMode ?? "",
+    country: r.country ?? "",
+    source: r.source ?? "",
+    resumeVersionId: r.resumeVersionId,
+    coverLetterUsed: r.coverLetterUsed,
+    tags: r.tags,
+  };
+}
 
 const BUILT_IN: TableView[] = [
   { name: "All opportunities", builtIn: true, state: {} },
@@ -204,6 +220,10 @@ export function OpportunitiesTable({ rows, views, now }: { rows: OpportunityRow[
                 >
                   {row.original.status === "wishlist" ? "Log application" : "Log activity"}
                 </DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => addOpportunity(similarRole(row.original))}>
+                  <Copy />
+                  Apply to similar role
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem variant="destructive" onSelect={() => deleteWithUndo("opportunities", [row.original.id], row.original.title)}>
                   Delete
@@ -215,7 +235,7 @@ export function OpportunitiesTable({ rows, views, now }: { rows: OpportunityRow[
           meta: { className: "w-10 px-1" },
         }),
       ]),
-    [now, quickLog],
+    [now, quickLog, addOpportunity],
   );
 
   return (

@@ -124,6 +124,8 @@ export type OpportunityRow = {
   excitement: number;
   jobUrl: string | null;
   resumeName: string | null;
+  resumeVersionId: number | null;
+  coverLetterUsed: boolean;
   tags: string[];
   stageSince: number;
   position: number;
@@ -133,11 +135,11 @@ export type OpportunityRow = {
 };
 
 export function listOpportunities(): OpportunityRow[] {
-  const rows = all<Omit<OpportunityRow, "tags"> & { tags: string | null }>(
+  const rows = all<Omit<OpportunityRow, "tags" | "coverLetterUsed"> & { tags: string | null; coverLetterUsed: number }>(
     `select o.id, o.title, c.id as companyId, c.name as companyName, c.tier as companyTier, c.logo_url as companyLogo,
        o.status, o.employment_type as employmentType, o.work_mode as workMode, o.country, o.source, o.compensation,
        o.deadline, o.applied_at as appliedAt, o.priority, o.excitement, o.job_url as jobUrl, o.position, o.created_at as createdAt,
-       r.name as resumeName,
+       r.name as resumeName, o.resume_version_id as resumeVersionId, o.cover_letter_used as coverLetterUsed,
        (select group_concat(t.name, char(31)) from opportunity_tags ot join tags t on t.id = ot.tag_id where ot.opportunity_id = o.id) as tags,
        coalesce((select max(h.changed_at) from status_history h where h.opportunity_id = o.id), o.created_at) as stageSince,
        (select min(i.scheduled_at) from interviews i where i.opportunity_id = o.id and i.deleted_at is null
@@ -150,7 +152,7 @@ export function listOpportunities(): OpportunityRow[] {
      where o.deleted_at is null
      order by o.position, o.id`,
   );
-  return rows.map((r) => ({ ...r, tags: splitTags(r.tags) }));
+  return rows.map((r) => ({ ...r, tags: splitTags(r.tags), coverLetterUsed: Boolean(r.coverLetterUsed) }));
 }
 
 /* ─────────────────────────── activities ─────────────────────────── */

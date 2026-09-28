@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { ArrowDownLeft, ArrowUpRight, LoaderCircle, TriangleAlert } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight, Eraser, History, LoaderCircle, TriangleAlert } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -55,6 +55,8 @@ type State = {
   subject: string;
   summary: string;
   occurredAt: Date | null;
+  /** Set by "Log another": company/contact/country were kept from the previous entry. */
+  carried: boolean;
 };
 
 const initialState = (p: QuickLogPreset = {}): State => ({
@@ -74,6 +76,7 @@ const initialState = (p: QuickLogPreset = {}): State => ({
   subject: p.subject ?? "",
   summary: p.summary ?? "",
   occurredAt: null,
+  carried: false,
 });
 
 const SHORTCUT: Partial<Record<ActivityType, string>> = {
@@ -112,7 +115,18 @@ export function QuickLogDialog({
     }
   }
 
-  const set = (patch: Partial<State>) => setS((prev) => ({ ...prev, ...patch }));
+  const set = (patch: Partial<State>) =>
+    setS((prev) => {
+      // Picking a different company or contact means it's no longer "kept from last entry".
+      const repicked = ["companyId", "newCompanyName", "contactId", "newContactName"].some((k) => k in patch);
+      return { ...prev, ...patch, carried: repicked ? false : prev.carried };
+    });
+  /** Start a blank entry of the same type. */
+  const clear = () => {
+    setS(initialState({ type: s.type }));
+    setError(null);
+    requestAnimationFrame(focusCompany);
+  };
 
   const company = lookups?.companies.find((c) => c.id === s.companyId);
   const contact = lookups?.contacts.find((c) => c.id === s.contactId);
@@ -227,10 +241,18 @@ export function QuickLogDialog({
     const created = r.data.createdOpportunityId ? " · opportunity created" : "";
     toast.success(`Logged ${ACTIVITY_META[s.type].label.toLowerCase()}${name ? ` · ${name}` : ""}${moved}${created}`);
     // New records and the new thread should show up in the pickers.
-    void refresh();
+    const refreshed = refresh();
     if (another) {
-      setS({ ...initialState({ type: s.type }) });
-      requestAnimationFrame(focusCompany);
+      // Keep the context (same company, same contact, same country), clear what's specific to this entry.
+      const companyId = s.companyId ?? r.data.createdCompanyId ?? null;
+      const contactId = s.contactId ?? r.data.createdContactId ?? null;
+      await refreshed; // so a company/contact created just now is in the pickers
+      setS({
+        ...initialState({ type: s.type, direction: s.direction, companyId, contactId, templateId: s.templateId }),
+        newOpportunityCountry: s.type === "application" ? s.newOpportunityCountry : "",
+        carried: Boolean(companyId),
+      });
+      requestAnimationFrame(() => document.getElementById(s.type === "application" ? "ql-role" : "ql-contact")?.focus());
     } else {
       onOpenChange(false);
     }
@@ -350,6 +372,20 @@ export function QuickLogDialog({
                 />
               </div>
             </div>
+          )}
+
+          {s.carried && company && (
+            <p className="flex items-center gap-2 text-xs text-muted-foreground">
+              <History className="size-3.5 shrink-0" />
+              <span className="min-w-0 flex-1 truncate">
+                Kept from last entry: <span className="text-foreground">{company.name}</span>
+                {contact && ` · ${contact.name}`}
+                {s.type === "application" && s.newOpportunityCountry && ` · ${s.newOpportunityCountry}`}
+              </span>
+              <button type="button" onClick={clear} className="shrink-0 font-medium text-foreground underline-offset-2 hover:underline">
+                Clear
+              </button>
+            </p>
           )}
 
           {recent && (
@@ -510,6 +546,10 @@ export function QuickLogDialog({
             <Checkbox checked={another} onCheckedChange={(v) => setAnother(v === true)} />
             Log another
           </label>
+          <Button type="button" variant="ghost" size="sm" onClick={clear} className="mr-auto text-muted-foreground">
+            <Eraser data-icon="inline-start" />
+            Clear
+          </Button>
           <div className="flex items-center gap-2">
             <span className="hidden text-xs text-muted-foreground sm:inline">
               <Kbd>Ctrl</Kbd> <Kbd>↵</Kbd>
