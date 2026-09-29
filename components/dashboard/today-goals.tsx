@@ -10,12 +10,24 @@ import type { StreakTarget } from "@/lib/services/dashboard";
 import { cn } from "@/lib/utils";
 
 /** Today's counts vs daily goals. Each ring is a shortcut to log that type. */
-export function TodayGoals({ counts, goals }: { counts: Partial<Record<ActivityType, number>>; goals: DailyGoals }) {
+export function TodayGoals({
+  counts,
+  goals,
+  showExtra = true,
+  only,
+}: {
+  counts: Partial<Record<ActivityType, number>>;
+  goals: DailyGoals;
+  /** Also list types logged today that have no goal. */
+  showExtra?: boolean;
+  /** Types the user chose to show; others are left out of the "also today" line too. */
+  only?: Set<string>;
+}) {
   const { quickLog } = useAppActions();
   const types = ACTIVITY_TYPES.filter((t) => (goals[t] ?? 0) > 0);
-  const extra = ACTIVITY_TYPES.filter((t) => !(goals[t] ?? 0) && (counts[t] ?? 0) > 0);
+  const extra = showExtra ? ACTIVITY_TYPES.filter((t) => !(goals[t] ?? 0) && (counts[t] ?? 0) > 0 && (!only || only.has(t))) : [];
   return (
-    <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
+    <div className="grid grid-cols-2 gap-2 @sm:grid-cols-3 @3xl:grid-cols-5">
       {types.map((t) => {
         const meta = ACTIVITY_META[t];
         const Icon = meta.icon;

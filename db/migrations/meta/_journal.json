@@ -78,6 +78,13 @@
       "when": 1790697713897,
       "tag": "0010_documents",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "6",
+      "when": 1790701266790,
+      "tag": "0011_dashboard_layout",
+      "breakpoints": true
     }
   ]
 }

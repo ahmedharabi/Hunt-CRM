@@ -19,6 +19,7 @@ import {
   templateSchema,
   textScaleSchema,
   colorThemeSchema,
+  dashboardLayoutSchema,
   backgroundStyleSchema,
   weeklyNotesSchema,
   type TemplateInput,
@@ -52,6 +53,15 @@ export async function saveTextScale(input: unknown) {
   return run(() => {
     const textScale = textScaleSchema.parse(input);
     getDb().update(s.settings).set({ textScale }).where(eq(s.settings.id, 1)).run();
+    return null;
+  });
+}
+
+/** `null` resets to the default layout. */
+export async function saveDashboardLayout(input: unknown) {
+  return run(() => {
+    const dashboardLayout = input === null ? null : dashboardLayoutSchema.parse(input);
+    getDb().update(s.settings).set({ dashboardLayout }).where(eq(s.settings.id, 1)).run();
     return null;
   });
 }

@@ -343,6 +343,8 @@ export const settings = sqliteTable("settings", {
   backgroundDim: integer("background_dim").notNull().default(55),
   /** Opacity of cards and the sidebar over the image, in percent. */
   surfaceOpacity: integer("surface_opacity").notNull().default(85),
+  /** Widget order, sizes and visibility; null means the default layout. See lib/dashboard-layout.ts. */
+  dashboardLayout: text("dashboard_layout", { mode: "json" }).$type<unknown>(),
 });
 
 /* ───────────────────────── relations ───────────────────────── */

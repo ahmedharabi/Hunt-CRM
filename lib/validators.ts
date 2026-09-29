@@ -19,6 +19,7 @@ import {
 } from "./domain";
 import { BACKGROUND, TEXT_SCALE } from "./appearance";
 import { COLOR_THEME_IDS } from "./themes";
+import { normalizeLayout, WIDGET_IDS, WIDGET_SIZES } from "./dashboard-layout";
 
 /*
  * Shared by react-hook-form (client) and server actions (server).
@@ -263,6 +264,20 @@ export const weeklyNotesSchema = z.object({
   weekStart: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   notes: z.string().max(50_000),
 });
+
+export const dashboardLayoutSchema = z
+  .array(
+    z.object({
+      id: z.enum(WIDGET_IDS),
+      size: z.enum(WIDGET_SIZES),
+      hidden: z.boolean(),
+      title: z.string().trim().max(60).nullable().default(null),
+      options: z.record(z.string(), z.union([z.string(), z.boolean(), z.array(z.string())])).default({}),
+    }),
+  )
+  .max(WIDGET_IDS.length)
+  // Drops option values the widget doesn't accept.
+  .transform(normalizeLayout);
 
 export const noteSchema = z.object({
   title: z.string().max(200),

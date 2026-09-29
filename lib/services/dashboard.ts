@@ -149,12 +149,12 @@ export function getDashboard(db: DB, settings: Settings, now = new Date()) {
   const weekStart = startOfWeekTz(now, tz, settings.weekStartsOn);
   const lastWeekStart = new Date(weekStart.getTime() - 7 * DAY);
 
-  // ~6 months for the heatmap, plus a year of history for the longest streak.
+  // A year for the heatmap (the widget shows 3, 6 or 12 months) and the longest streak.
   const byDay = countsByDay(db, tz, new Date(now.getTime() - 400 * DAY));
   const todayCounts = byDay.get(today) ?? {};
   const streak = computeStreaks(byDay, today, settings.streakGoals, settings.streakMode);
 
-  const heatmapStart = startOfWeekTz(new Date(now.getTime() - 26 * 7 * DAY), tz, settings.weekStartsOn);
+  const heatmapStart = startOfWeekTz(new Date(now.getTime() - 52 * 7 * DAY), tz, settings.weekStartsOn);
   // Companies touched each day, for the heatmap's hover card.
   const companiesByDay = new Map<string, string[]>();
   const touched = db.$client
@@ -217,16 +217,17 @@ export function getDashboard(db: DB, settings: Settings, now = new Date()) {
 
   const followUps = groupFollowUps(followUpsDue(db, new Date(startToday.getTime() + 8 * DAY)), now, tz);
 
-  const in7 = now.getTime() + 7 * DAY;
+  // The "upcoming" widget can look up to 30 days ahead; it trims to its own range.
+  const horizon = now.getTime() + 30 * DAY;
   const interviews = db.$client
     .prepare(
       `select i.id, i.stage, i.scheduled_at as scheduledAt, i.duration_minutes as durationMinutes,
          o.id as opportunityId, o.title, c.id as companyId, c.name as companyName, c.timezone as companyTz
        from interviews i join opportunities o on o.id = i.opportunity_id join companies c on c.id = o.company_id
-       where i.deleted_at is null and i.outcome != 'cancelled' and i.scheduled_at >= @now and i.scheduled_at < @in7
+       where i.deleted_at is null and i.outcome != 'cancelled' and i.scheduled_at >= @now and i.scheduled_at < @horizon
        order by i.scheduled_at`,
     )
-    .all({ now: now.getTime() - 2 * 3_600_000, in7 }) as {
+    .all({ now: now.getTime() - 2 * 3_600_000, horizon }) as {
     id: number;
     stage: string;
     scheduledAt: number;
@@ -242,11 +243,11 @@ export function getDashboard(db: DB, settings: Settings, now = new Date()) {
     .prepare(
       `select o.id, o.title, o.deadline, o.status, c.id as companyId, c.name as companyName
        from opportunities o join companies c on c.id = o.company_id
-       where o.deleted_at is null and o.deadline >= @start and o.deadline < @in7
+       where o.deleted_at is null and o.deadline >= @start and o.deadline < @horizon
          and o.status in ('wishlist', 'applied', 'screening', 'interviewing', 'offer')
        order by o.deadline`,
     )
-    .all({ start: startToday.getTime(), in7 }) as {
+    .all({ start: startToday.getTime(), horizon }) as {
     id: number;
     title: string;
     deadline: number;
@@ -265,7 +266,7 @@ export function getDashboard(db: DB, settings: Settings, now = new Date()) {
        left join contacts p on p.id = a.contact_id
        left join opportunities o on o.id = a.opportunity_id
        where a.deleted_at is null
-       order by a.occurred_at desc limit 12`,
+       order by a.occurred_at desc limit 20`,
     )
     .all() as {
     id: number;
