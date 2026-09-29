@@ -49,11 +49,13 @@ Hunt is built for a single person looking for work:
 | **Analytics** | Outreach volume, reply rate by channel and by template, funnel conversion, stage durations and time to first reply |
 | **Weekly review** | Your week against your weekly goals, with notes on what to change next week |
 | **Templates** | Reusable cold emails, DMs, connection notes and follow-ups |
+| **Notes** | A page for free-form notes in markdown: headings, bullet points, checklists you can tick in the preview, code and links. Autosaves, pin to top, searchable from `Ctrl K` |
+| **Documents** | Every version of your CV and your cover letters in one place, with a preview of each: PDFs in the built-in viewer, Google Drive and Docs links embedded, and cover letters you can write right in the app and copy into application forms |
 | **Guardrails** | Warnings for duplicate companies and roles, a nudge if you messaged a contact in the last 7 days, the company's local time, and a LinkedIn weekly connection meter |
 | **Calendar feed** | An `.ics` feed of interviews, deadlines and follow-ups to subscribe to from any calendar app |
 | **Import and export** | CSV import and export for tables, full JSON backup and restore, raw database download, and automatic daily snapshots |
 | **Runs where you are** | Desktop app (Electron), a PWA on your phone over your LAN, or a plain browser tab |
-| **Themes** | Light, dark or system, with no flash on load |
+| **Appearance** | Light, dark or system with no flash on load, color themes, text size, and an optional background image with blur and dim |
 
 ## Screenshots
 
@@ -136,6 +138,8 @@ APP_PASSWORD=pick-something-long
 | `Ctrl Enter` | Submit the open form or dialog |
 | `Ctrl B` | Toggle the sidebar |
 
+In the notes editor, `Ctrl B` / `Ctrl I` make text bold or italic, `Enter` continues a list, and `Tab` / `Shift Tab` indent or outdent a bullet.
+
 ## How it works
 
 ### Automation
@@ -161,7 +165,7 @@ APP_PASSWORD=pick-something-long
 | --- | --- |
 | `./data/hunt.db` | The database (SQLite, WAL mode) |
 | `./data/backups/` | A snapshot on the first request each day (the last 14 are kept) |
-| `./data/uploads/` | Uploaded resumes |
+| `./data/uploads/` | Uploaded CVs, cover letters and background images |
 
 `./data` is gitignored. Set `HUNT_DATA_DIR` to keep it somewhere else.
 
