@@ -149,21 +149,24 @@ export async function saveWeeklyNotes(input: unknown) {
   );
 }
 
-/* ─────────────────────────── resumes ─────────────────────────── */
+/* ─────────────────────────── documents (CVs & cover letters) ─────────────────────────── */
 
 const MAX_UPLOAD = 10 * 1024 * 1024;
 const ALLOWED = new Set([".pdf", ".doc", ".docx", ".md", ".txt"]);
 
 export async function saveResume(formData: FormData, id?: number) {
   return run(async () => {
-    const values = resumeSchema.parse({
+    const { source, ...values } = resumeSchema.parse({
+      kind: formData.get("kind") ?? undefined,
       name: formData.get("name"),
       description: formData.get("description"),
+      source: formData.get("source") ?? undefined,
       fileUrl: formData.get("fileUrl"),
+      content: formData.get("content"),
     });
     let filePath: string | undefined;
     const file = formData.get("file");
-    if (file instanceof File && file.size > 0) {
+    if (source === "file" && file instanceof File && file.size > 0) {
       const ext = path.extname(file.name).toLowerCase();
       if (!ALLOWED.has(ext)) throw new Error("Upload a PDF, Word, Markdown or text file");
       if (file.size > MAX_UPLOAD) throw new Error("Files must be under 10 MB");
@@ -173,15 +176,22 @@ export async function saveResume(formData: FormData, id?: number) {
       await fs.writeFile(path.join(UPLOAD_DIR, stored), Buffer.from(await file.arrayBuffer()));
       filePath = `${stored}|${file.name.replace(/[^\w.\- ]+/g, "_")}`;
     }
+    // Keep only the chosen source. Editing a file-backed document without a new upload keeps its file.
+    const sourced = {
+      ...values,
+      fileUrl: source === "link" ? values.fileUrl : null,
+      content: source === "write" ? values.content : null,
+      ...(source === "file" ? (filePath ? { filePath } : {}) : { filePath: null }),
+    };
     const db = getDb();
     const row = id
       ? db
           .update(s.resumeVersions)
-          .set({ ...values, ...(filePath ? { filePath } : {}) })
+          .set(sourced)
           .where(eq(s.resumeVersions.id, id))
           .returning()
           .get()
-      : db.insert(s.resumeVersions).values({ ...values, filePath }).returning().get();
+      : db.insert(s.resumeVersions).values(sourced).returning().get();
     return { id: row.id };
   });
 }

@@ -2,10 +2,11 @@ import path from "node:path";
 import { Page, PageHeader } from "@/components/shared/page";
 import { Section, SettingsForm } from "@/components/settings/settings-form";
 import { DataSection } from "@/components/settings/data-section";
-import { ResumesSection } from "@/components/settings/resumes-section";
+import Link from "next/link";
+import { FileUser } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { getDb } from "@/db/client";
 import { DATA_DIR } from "@/db/paths";
-import { listResumes } from "@/lib/queries/records";
 import { getSettings } from "@/lib/queries/settings";
 
 export const metadata = { title: "Settings" };
@@ -20,8 +21,13 @@ export default function SettingsPage() {
       <PageHeader title="Settings" description="Everything is stored locally in one SQLite file." />
       <SettingsForm settings={getSettings()} />
       <div className="border-t">
-        <Section title="Resume versions" description="Attach one to each application to compare interview rates.">
-          <ResumesSection resumes={listResumes()} />
+        <Section title="CVs & cover letters" description="Attach a CV to each application to compare interview rates.">
+          <Button variant="outline" asChild>
+            <Link href="/documents">
+              <FileUser data-icon="inline-start" />
+              Manage in Documents
+            </Link>
+          </Button>
         </Section>
         <Section title="Data" description="Your data never leaves this machine.">
           <DataSection hasSample={hasSample} dataDir={relDir} />

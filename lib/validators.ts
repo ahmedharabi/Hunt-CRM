@@ -6,6 +6,7 @@ import {
   COMPANY_SIZES,
   CONTACT_TYPES,
   DIRECTIONS,
+  DOCUMENT_KINDS,
   EMPLOYMENT_TYPES,
   INTERVIEW_OUTCOMES,
   INTERVIEW_STAGES,
@@ -211,10 +212,15 @@ export const templateSchema = z.object({
 export type TemplateInput = z.input<typeof templateSchema>;
 export type TemplateValues = z.output<typeof templateSchema>;
 
+export const DOCUMENT_SOURCES = ["file", "link", "write"] as const;
+
 export const resumeSchema = z.object({
+  kind: z.enum(DOCUMENT_KINDS).default("resume"),
   name: z.string().trim().min(1, "Name is required").max(120),
   description: optText(1000),
+  source: z.enum(DOCUMENT_SOURCES).default("file"),
   fileUrl: optUrl,
+  content: optText(50_000),
 });
 
 // Partial: the form drops zero ("no goal") entries, and z.record over an enum requires every key.

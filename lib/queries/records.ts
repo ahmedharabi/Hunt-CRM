@@ -1,7 +1,11 @@
 import "server-only";
+import fs from "node:fs/promises";
+import path from "node:path";
 import { and, asc, desc, eq, isNull } from "drizzle-orm";
 import { getDb } from "@/db/client";
 import * as s from "@/db/schema";
+import { UPLOAD_DIR } from "@/db/paths";
+import { documentFormat, storedFile, type DocumentItem } from "@/lib/documents";
 import type {
   ActivityOutcome,
   ActivityType,
@@ -362,7 +366,7 @@ export function getLookups() {
       `select id, name, type, subject, body from templates where deleted_at is null order by name collate nocase`,
     ),
     resumes: all<{ id: number; name: string }>(
-      `select id, name from resume_versions where deleted_at is null order by created_at desc`,
+      `select id, name from resume_versions where kind = 'resume' and deleted_at is null order by created_at desc`,
     ),
     tags: all<{ name: string }>(`select name from tags where deleted_at is null order by name`).map((t) => t.name),
     /** Recent outbound threads, for picking what a follow-up replies to. */
@@ -400,12 +404,25 @@ export function listTemplates() {
   return getDb().select().from(s.templates).where(isNull(s.templates.deletedAt)).orderBy(asc(s.templates.name)).all();
 }
 
-export function listResumes() {
-  return all<{ id: number; name: string; description: string | null; fileUrl: string | null; filePath: string | null; createdAt: number; applications: number }>(
-    `select r.id, r.name, r.description, r.file_url as fileUrl, r.file_path as filePath, r.created_at as createdAt,
+/** CVs and cover letters, newest first. */
+export function listDocuments(): DocumentItem[] {
+  return all<DocumentItem>(
+    `select r.id, r.kind, r.name, r.description, r.file_url as fileUrl, r.file_path as filePath, r.content,
+       r.created_at as createdAt, r.updated_at as updatedAt,
        (select count(*) from opportunities o where o.resume_version_id = r.id and o.deleted_at is null) as applications
      from resume_versions r where r.deleted_at is null order by r.created_at desc`,
   );
+}
+
+/** Uploaded .md/.txt files are read here so the preview can render them. */
+export async function readDocumentText(d: DocumentItem): Promise<string | null> {
+  const format = documentFormat(d);
+  if (!d.filePath || (format !== "markdown" && format !== "text")) return null;
+  try {
+    return await fs.readFile(path.join(UPLOAD_DIR, path.basename(storedFile(d.filePath).stored)), "utf8");
+  } catch {
+    return null;
+  }
 }
 
 /* ─────────────────────────── notes ─────────────────────────── */

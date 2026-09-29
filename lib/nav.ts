@@ -5,6 +5,7 @@ import {
   CalendarCheck,
   ChartColumn,
   FileText,
+  FileUser,
   Inbox,
   LayoutGrid,
   Mail,
@@ -43,6 +44,7 @@ export const NAV: { label?: string; items: NavItem[] }[] = [
       { title: "Weekly review", href: "/review", icon: CalendarCheck },
       { title: "Templates", href: "/templates", icon: FileText },
       { title: "Notes", href: "/notes", icon: NotebookPen },
+      { title: "Documents", href: "/documents", icon: FileUser },
     ],
   },
 ];

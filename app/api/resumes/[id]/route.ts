@@ -15,7 +15,8 @@ const TYPES: Record<string, string> = {
   ".txt": "text/plain; charset=utf-8",
 };
 
-export async function GET(_req: Request, ctx: RouteContext<"/api/resumes/[id]">) {
+/** Serves an uploaded CV or cover letter inline for the preview; `?download` saves it instead. */
+export async function GET(req: Request, ctx: RouteContext<"/api/resumes/[id]">) {
   const { id } = await ctx.params;
   const row = getDb().select().from(resumeVersions).where(eq(resumeVersions.id, Number(id))).get();
   if (!row?.filePath) return new Response("Not found", { status: 404 });
@@ -27,7 +28,7 @@ export async function GET(_req: Request, ctx: RouteContext<"/api/resumes/[id]">)
     return new Response(bytes, {
       headers: {
         "content-type": TYPES[path.extname(stored)] ?? "application/octet-stream",
-        "content-disposition": `inline; filename="${original ?? stored}"`,
+        "content-disposition": `${new URL(req.url).searchParams.has("download") ? "attachment" : "inline"}; filename="${original ?? stored}"`,
       },
     });
   } catch {

@@ -13,6 +13,7 @@ import {
   ACTIVITY_TYPES,
   CHANNELS,
   COMPANY_SIZES,
+  DOCUMENT_KINDS,
   CONTACT_TYPES,
   DIRECTIONS,
   EMPLOYMENT_TYPES,
@@ -93,13 +94,16 @@ export const contacts = sqliteTable(
   (t) => [index("contacts_company_idx").on(t.companyId)],
 );
 
+/** CVs and cover letters (the Documents page). Only resumes attach to applications. */
 export const resumeVersions = sqliteTable("resume_versions", {
   ...base,
+  kind: text("kind", { enum: DOCUMENT_KINDS }).notNull().default("resume"),
   name: text("name").notNull(),
   description: text("description"),
-  /** Either an external link or a path under ./data/uploads. */
+  /** One source: an external link, a path under ./data/uploads, or markdown written in the app. */
   fileUrl: text("file_url"),
   filePath: text("file_path"),
+  content: text("content"),
 });
 
 export const opportunities = sqliteTable(

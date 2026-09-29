@@ -84,6 +84,9 @@ export type InterviewStage = (typeof INTERVIEW_STAGES)[number];
 export const INTERVIEW_OUTCOMES = ["scheduled", "passed", "failed", "pending", "cancelled"] as const;
 export type InterviewOutcome = (typeof INTERVIEW_OUTCOMES)[number];
 
+export const DOCUMENT_KINDS = ["resume", "cover_letter"] as const;
+export type DocumentKind = (typeof DOCUMENT_KINDS)[number];
+
 export const TEMPLATE_TYPES = ["cold_email", "linkedin_dm", "connection_note", "follow_up"] as const;
 export type TemplateType = (typeof TEMPLATE_TYPES)[number];
 
