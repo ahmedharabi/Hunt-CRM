@@ -8,6 +8,7 @@ import {
   Inbox,
   LayoutGrid,
   Mail,
+  NotebookPen,
   Settings2,
   SquareKanban,
   UsersRound,
@@ -41,6 +42,7 @@ export const NAV: { label?: string; items: NavItem[] }[] = [
       { title: "Analytics", href: "/analytics", icon: ChartColumn },
       { title: "Weekly review", href: "/review", icon: CalendarCheck },
       { title: "Templates", href: "/templates", icon: FileText },
+      { title: "Notes", href: "/notes", icon: NotebookPen },
     ],
   },
 ];

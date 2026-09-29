@@ -147,6 +147,7 @@ const TABLES = {
   activities: s.activities,
   interviews: s.interviews,
   templates: s.templates,
+  notes: s.notes,
   resumes: s.resumeVersions,
   views: s.savedViews,
 } as const;

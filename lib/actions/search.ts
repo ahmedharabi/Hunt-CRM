@@ -5,7 +5,7 @@ import { getDb } from "@/db/client";
 import { run } from "./run";
 
 export type SearchHit = {
-  kind: "company" | "contact" | "opportunity" | "activity" | "interview" | "template";
+  kind: "company" | "contact" | "opportunity" | "activity" | "interview" | "template" | "note";
   id: number;
   title: string;
   snippet: string;
@@ -54,6 +54,7 @@ export async function globalSearch(query: string) {
                when 'activity' then exists(select 1 from activities where id = si.ref_id and deleted_at is null)
                when 'interview' then exists(select 1 from interviews where id = si.ref_id and deleted_at is null)
                when 'template' then exists(select 1 from templates where id = si.ref_id and deleted_at is null)
+               when 'note' then exists(select 1 from notes where id = si.ref_id and deleted_at is null)
              end
            order by case si.kind when 'company' then 0 when 'opportunity' then 1 when 'contact' then 2 else 3 end, rank
            limit 30`,
@@ -67,6 +68,7 @@ export async function globalSearch(query: string) {
         else if (r.kind === "opportunity") href = `/opportunities/${r.id}`;
         else if (r.kind === "interview") href = `/opportunities/${link}`;
         else if (r.kind === "template") href = `/templates`;
+        else if (r.kind === "note") href = `/notes/${r.id}`;
         else if (r.kind === "activity") {
           const [opp, company] = String(link).split(":").map(Number);
           href = opp > 0 ? `/opportunities/${opp}` : company > 0 ? `/companies/${company}` : "/activities";

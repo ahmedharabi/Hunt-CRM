@@ -20,6 +20,7 @@ export const BACKUP_TABLES = [
   "interviews",
   "interview_contacts",
   "weekly_reviews",
+  "notes",
   "saved_views",
 ] as const;
 

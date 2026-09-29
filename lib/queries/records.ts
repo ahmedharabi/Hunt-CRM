@@ -407,3 +407,38 @@ export function listResumes() {
      from resume_versions r where r.deleted_at is null order by r.created_at desc`,
   );
 }
+
+/* ─────────────────────────── notes ─────────────────────────── */
+
+export type NoteListItem = { id: number; title: string; preview: string; pinned: boolean; updatedAt: Date };
+
+/** Pinned first, then most recently edited. The preview is the body with markdown syntax stripped. */
+export function listNotes(): NoteListItem[] {
+  return getDb()
+    .select()
+    .from(s.notes)
+    .where(isNull(s.notes.deletedAt))
+    .orderBy(desc(s.notes.pinned), desc(s.notes.updatedAt))
+    .all()
+    .map((n) => ({
+      id: n.id,
+      title: n.title,
+      pinned: n.pinned,
+      updatedAt: n.updatedAt,
+      preview: n.body
+        .slice(0, 400)
+        .replace(/^\s*(?:#{1,6}|[-*+]|\d+\.|>)\s+(?:\[[ xX]\]\s+)?/gm, "")
+        .replace(/[*_`~]|\[([^\]]*)\]\([^)]*\)/g, "$1")
+        .replace(/\s+/g, " ")
+        .trim()
+        .slice(0, 140),
+    }));
+}
+
+export function getNote(id: number) {
+  return getDb()
+    .select()
+    .from(s.notes)
+    .where(and(eq(s.notes.id, id), isNull(s.notes.deletedAt)))
+    .get();
+}

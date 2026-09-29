@@ -290,6 +290,18 @@ export const weeklyReviews = sqliteTable(
   (t) => [uniqueIndex("weekly_reviews_week_idx").on(t.weekStart)],
 );
 
+/** Free-form markdown notes, the Notes page. */
+export const notes = sqliteTable(
+  "notes",
+  {
+    ...base,
+    title: text("title").notNull().default(""),
+    body: text("body").notNull().default(""),
+    pinned: integer("pinned", { mode: "boolean" }).notNull().default(false),
+  },
+  (t) => [index("notes_updated_idx").on(t.updatedAt)],
+);
+
 /** Single-row table (id = 1). */
 export const settings = sqliteTable("settings", {
   id: integer("id").primaryKey(),
@@ -446,4 +458,5 @@ export const savedViews = sqliteTable(
 export type SavedView = typeof savedViews.$inferSelect;
 export type Tag = typeof tags.$inferSelect;
 export type WeeklyReview = typeof weeklyReviews.$inferSelect;
+export type Note = typeof notes.$inferSelect;
 export type StatusHistory = typeof statusHistory.$inferSelect;

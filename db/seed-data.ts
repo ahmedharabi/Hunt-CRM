@@ -162,6 +162,7 @@ export const SEEDABLE_TABLES = [
   s.templates,
   s.resumeVersions,
   s.weeklyReviews,
+  s.notes,
   s.companies,
   s.tags,
 ] as const;

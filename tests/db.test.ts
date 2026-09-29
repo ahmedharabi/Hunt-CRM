@@ -32,6 +32,17 @@ describe("migrations", () => {
     expect(raw.t).toBe("integer");
     expect(Math.abs(raw.created_at - Date.now())).toBeLessThan(5_000);
   });
+
+  it("keeps notes in the search index as they're edited", () => {
+    const db = testDb();
+    const { id } = db.insert(s.notes).values({ title: "Kubernetes prep", body: "- [ ] read about operators" }).returning().get();
+    const find = (q: string) =>
+      db.$client.prepare("select ref_id from search_index where kind = 'note' and search_index match ?").all(q) as { ref_id: number }[];
+    expect(find("operators")).toEqual([{ ref_id: id }]);
+    db.update(s.notes).set({ body: "helm charts" }).where(eq(s.notes.id, id)).run();
+    expect(find("operators")).toEqual([]);
+    expect(find("helm")).toEqual([{ ref_id: id }]);
+  });
 });
 
 describe("seed", () => {

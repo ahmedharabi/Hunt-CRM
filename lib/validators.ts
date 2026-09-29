@@ -258,6 +258,11 @@ export const weeklyNotesSchema = z.object({
   notes: z.string().max(50_000),
 });
 
+export const noteSchema = z.object({
+  title: z.string().max(200),
+  body: z.string().max(200_000),
+});
+
 export const dateRangeSchema = z.object({
   from: optDate,
   to: optDate,
