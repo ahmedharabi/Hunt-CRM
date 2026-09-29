@@ -24,6 +24,15 @@ jobs:
         with:
           node-version: 24
           cache: npm
+      - name: Version tag matches package.json
+        if: startsWith(github.ref, 'refs/tags/v')
+        # The in-app update check compares release tags with package.json.
+        run: |
+          version="v$(node -p "require('./package.json').version")"
+          if [ "$version" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME doesn't match package.json ($version). Run: npm version <patch|minor|major>"
+            exit 1
+          fi
       - run: npm ci
       - run: npm run typecheck
       - run: npm run lint
@@ -64,3 +73,21 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  release:
+    name: Publish GitHub release
+    needs: [check, docker]
+    # Version tags only. Installed copies of Hunt see this release in their update check.
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+      - name: Create the release with generated notes
+        env:
+          GH_TOKEN: ${{ github.token }}
+        # Leaves a release you already wrote by hand alone.
+        run: |
+          gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1 \
+            || gh release create "$GITHUB_REF_NAME" --verify-tag --generate-notes --title "$GITHUB_REF_NAME"

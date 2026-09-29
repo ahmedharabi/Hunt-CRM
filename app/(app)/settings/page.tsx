@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { getDb } from "@/db/client";
 import { DATA_DIR } from "@/db/paths";
 import { getSettings } from "@/lib/queries/settings";
+import { APP_VERSION } from "@/lib/services/updates";
+import { UpdatesSection } from "@/components/settings/updates-section";
 
 export const metadata = { title: "Settings" };
 
@@ -28,6 +30,9 @@ export default function SettingsPage() {
               Manage in Documents
             </Link>
           </Button>
+        </Section>
+        <Section title="Updates" description="Get a note in the sidebar when a new version of Hunt is released.">
+          <UpdatesSection version={APP_VERSION} enabled={getSettings().checkUpdates} envDisabled={process.env.HUNT_UPDATE_CHECK === "0"} />
         </Section>
         <Section title="Data" description="Your data never leaves this machine.">
           <DataSection hasSample={hasSample} dataDir={relDir} />

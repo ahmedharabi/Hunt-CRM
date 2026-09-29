@@ -18,6 +18,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { LogoMark } from "@/components/brand/logo";
+import { UpdateNotice } from "@/components/layout/update-notice";
 import { NAV, SETTINGS_NAV, type NavItem } from "@/lib/nav";
 
 export type SidebarCounts = { followUps: number };
@@ -70,6 +71,7 @@ export function AppSidebar({ counts }: { counts: SidebarCounts }) {
 
       <SidebarFooter className="pb-3">
         <SidebarMenu>
+          <UpdateNotice />
           <NavLink item={SETTINGS_NAV} active={isActive(pathname, SETTINGS_NAV.href)} />
         </SidebarMenu>
       </SidebarFooter>

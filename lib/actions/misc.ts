@@ -24,6 +24,7 @@ import {
   weeklyNotesSchema,
   type TemplateInput,
 } from "@/lib/validators";
+import { z } from "zod";
 import { run } from "./run";
 
 /* ─────────────────────────── templates ─────────────────────────── */
@@ -54,6 +55,14 @@ export async function saveTextScale(input: unknown) {
     const textScale = textScaleSchema.parse(input);
     getDb().update(s.settings).set({ textScale }).where(eq(s.settings.id, 1)).run();
     return null;
+  });
+}
+
+export async function saveCheckUpdates(input: unknown) {
+  return run(() => {
+    const checkUpdates = z.boolean().parse(input);
+    getDb().update(s.settings).set({ checkUpdates }).where(eq(s.settings.id, 1)).run();
+    return { checkUpdates };
   });
 }
 

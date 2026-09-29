@@ -129,6 +129,10 @@ Hunt has no login screen by default. To require a password (recommended with `de
 APP_PASSWORD=pick-something-long
 ```
 
+### Updates
+
+Hunt checks GitHub for a newer release twice a day and shows **Update available** in the sidebar, with the release notes and the commands to update. Only the request to GitHub leaves your machine. Turn it off in **Settings → Updates**, or for a whole install with `HUNT_UPDATE_CHECK=0`.
+
 ## Keyboard shortcuts
 
 | Key | Action |
@@ -223,6 +227,15 @@ Contributions are welcome: bug reports, ideas and pull requests.
 5. Open a pull request describing what changed and why.
 
 For larger changes, please open an issue first so we can agree on the approach.
+
+### Releasing
+
+```bash
+npm version minor    # or patch / major: bumps package.json and creates the vX.Y.Z tag
+git push --follow-tags
+```
+
+CI checks that the tag matches `package.json`, runs the checks, publishes the Docker image, then creates the GitHub release with generated notes. Installed copies see it in their next update check. Edit the release on GitHub afterwards if you want to write the notes yourself.
 
 ## License
 

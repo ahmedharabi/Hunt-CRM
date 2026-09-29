@@ -345,6 +345,8 @@ export const settings = sqliteTable("settings", {
   surfaceOpacity: integer("surface_opacity").notNull().default(85),
   /** Widget order, sizes and visibility; null means the default layout. See lib/dashboard-layout.ts. */
   dashboardLayout: text("dashboard_layout", { mode: "json" }).$type<unknown>(),
+  /** Look for new releases on GitHub (see lib/services/updates.ts). */
+  checkUpdates: integer("check_updates", { mode: "boolean" }).notNull().default(true),
 });
 
 /* ───────────────────────── relations ───────────────────────── */

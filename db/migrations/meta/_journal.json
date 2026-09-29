@@ -85,6 +85,13 @@
       "when": 1790701266790,
       "tag": "0011_dashboard_layout",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "6",
+      "when": 1790703118506,
+      "tag": "0012_check_updates",
+      "breakpoints": true
     }
   ]
 }
