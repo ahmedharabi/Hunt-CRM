@@ -12,7 +12,7 @@ Log every application, cold email, LinkedIn DM and follow-up in seconds, never m
 ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)
 ![SQLite](https://img.shields.io/badge/SQLite-local--first-003B57?logo=sqlite&logoColor=white)
-![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
+![License: PolyForm Strict](https://img.shields.io/badge/License-PolyForm%20Strict-orange.svg)
 
 <br />
 
@@ -255,4 +255,11 @@ CI checks that the tag matches `package.json`, runs the checks, publishes the Do
 
 ## License
 
-[MIT](LICENSE)
+[PolyForm Strict 1.0.0](LICENSE). Hunt is free to use for any noncommercial purpose: your own job search, study, a school or a nonprofit. You may not:
+
+- sell Hunt, or use it to make money (including offering it as a paid or hosted service),
+- redistribute it, or publish a modified version or a product based on it.
+
+Contributions are welcome: the license lets you change the code to send a pull request here. For commercial use or anything else the license doesn't cover, [get in touch](https://github.com/ahmedharabi).
+
+Versions up to and including v0.1.0 were released under the MIT license, and copies obtained under those terms keep them.

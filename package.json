@@ -3,6 +3,7 @@
   "productName": "Hunt",
   "version": "0.1.0",
   "private": true,
+  "license": "PolyForm-Strict-1.0.0",
   "main": "electron/main.mjs",
   "desktopName": "hunt.desktop",
   "scripts": {
