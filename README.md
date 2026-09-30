@@ -261,5 +261,3 @@ CI checks that the tag matches `package.json`, runs the checks, publishes the Do
 - redistribute it, or publish a modified version or a product based on it.
 
 Contributions are welcome: the license lets you change the code to send a pull request here. For commercial use or anything else the license doesn't cover, [get in touch](https://github.com/ahmedharabi).
-
-Versions up to and including v0.1.0 were released under the MIT license, and copies obtained under those terms keep them.
