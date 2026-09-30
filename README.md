@@ -41,9 +41,11 @@ Hunt is built for a single person looking for work:
 
 | | |
 | --- | --- |
-| **Dashboard** | Daily goal rings, streaks, an activity heatmap, today's follow-ups and upcoming interviews |
+| **Dashboard** | Daily goal rings, streaks with their own targets, an activity heatmap, today's follow-ups and upcoming interviews |
+| **Customizable dashboard** | Drag blocks to reorder them, hide the ones you don't use, and give each its own title, width and options (which goals to show, how many rows, the look-ahead range, the heatmap period). A Pinned notes block is available too |
 | **Pipeline** | Kanban board (Applied → Interview → Offer → Rejected) with drag and drop that follows the status rules and records history |
-| **Companies, contacts, opportunities** | Sortable, filterable tables with saved views, detail pages and a full activity timeline |
+| **Applications and emails** | Dedicated pages for every role you applied to and every email you sent, with Today / This week / This month tabs, status changes right from the table, and "Log another" that keeps the company and template so you can apply to several roles in a row |
+| **Companies, contacts, opportunities** | Sortable, filterable tables with saved views, detail pages, a full activity timeline, and company logos fetched from each company's website |
 | **Quick log and command palette** | Keyboard-first logging, plus `Ctrl K` search across everything, including notes and job descriptions |
 | **Follow-up engine** | Per-type reminder rules, follow-ups linked to the original message, snoozing, and ghosting after a configurable number of days |
 | **Analytics** | Outreach volume, reply rate by channel and by template, funnel conversion, stage durations and time to first reply |
@@ -55,18 +57,31 @@ Hunt is built for a single person looking for work:
 | **Calendar feed** | An `.ics` feed of interviews, deadlines and follow-ups to subscribe to from any calendar app |
 | **Import and export** | CSV import and export for tables, full JSON backup and restore, raw database download, and automatic daily snapshots |
 | **Runs where you are** | Desktop app (Electron), a PWA on your phone over your LAN, or a plain browser tab |
-| **Appearance** | Light, dark or system with no flash on load, color themes, text size, and an optional background image with blur and dim |
+| **Appearance** | Light, dark or system with no flash on load, color themes (Tokyo Night, Catppuccin, Rosé Pine, Nord, Gruvbox), text size, and an optional background image with blur, dim and card opacity |
+| **Update notices** | Hunt tells you when a new release is out, with the release notes and the commands to update |
 
 ## Screenshots
 
 <table>
   <tr>
-    <td width="50%"><img src="docs/screenshots/pipeline.png" alt="Kanban pipeline with Applied, Interview, Offer and Rejected columns" /><p align="center"><b>Pipeline</b>: drag cards between stages</p></td>
-    <td width="50%"><img src="docs/screenshots/analytics.png" alt="Analytics: outreach, reply rate, activity per day and reply rate by channel, source and tier" /><p align="center"><b>Analytics</b>: see what's actually working</p></td>
+    <td width="50%"><img src="docs/screenshots/dashboard-customize.png" alt="Dashboard in customize mode, with the settings of the Follow-ups block open" /><p align="center"><b>Customize</b>: reorder, hide and configure every block</p></td>
+    <td width="50%"><img src="docs/screenshots/pipeline.png" alt="Kanban pipeline with Applied, Interview, Offer and Rejected columns and company logos" /><p align="center"><b>Pipeline</b>: drag cards between stages</p></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/applications.png" alt="Applications table with time filters, status, time in stage, next step, tier, source and country" /><p align="center"><b>Applications</b>: filter, sort and save views</p></td>
+    <td width="50%"><img src="docs/screenshots/emails.png" alt="Emails table listing cold emails, follow-ups and replies with their outcome" /><p align="center"><b>Emails</b>: every email sent and every reply</p></td>
   </tr>
   <tr>
     <td width="50%"><img src="docs/screenshots/follow-ups.png" alt="Follow-ups inbox listing overdue follow-ups with quick actions" /><p align="center"><b>Follow-ups</b>: everything that's due, in one inbox</p></td>
-    <td width="50%"><img src="docs/screenshots/opportunities.png" alt="Opportunities table with status, time in stage, next step, tier and source" /><p align="center"><b>Opportunities</b>: filter, sort and save views</p></td>
+    <td width="50%"><img src="docs/screenshots/analytics.png" alt="Analytics: outreach, reply rate, activity per day and reply rate by channel, source and tier" /><p align="center"><b>Analytics</b>: see what's actually working</p></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/notes.png" alt="Notes page with a markdown note in split view: source on the left, preview with checklists on the right" /><p align="center"><b>Notes</b>: markdown with live preview and checklists</p></td>
+    <td width="50%"><img src="docs/screenshots/documents.png" alt="Documents page previewing a PDF CV in the built-in viewer" /><p align="center"><b>Documents</b>: every CV and cover letter, with previews</p></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/cover-letter.png" alt="A cover letter written in Hunt, with a Copy text button" /><p align="center"><b>Cover letters</b>: write them in the app, copy into forms</p></td>
+    <td width="50%"><img src="docs/screenshots/themes.png" alt="Dashboard in the Catppuccin theme over a custom background image" /><p align="center"><b>Themes</b>: color themes and a background image of your own</p></td>
   </tr>
 </table>
 
@@ -169,7 +184,7 @@ In the notes editor, `Ctrl B` / `Ctrl I` make text bold or italic, `Enter` conti
 | --- | --- |
 | `./data/hunt.db` | The database (SQLite, WAL mode) |
 | `./data/backups/` | A snapshot on the first request each day (the last 14 are kept) |
-| `./data/uploads/` | Uploaded CVs, cover letters and background images |
+| `./data/uploads/` | Uploaded CVs, cover letters, background images and company logos |
 
 `./data` is gitignored. Set `HUNT_DATA_DIR` to keep it somewhere else.
 
@@ -190,12 +205,13 @@ app/                 routes (App Router); (app)/ holds everything behind the sid
 components/ui/       shadcn/ui primitives
 components/layout/   sidebar, header, providers
 components/shared/   app-level building blocks (badges, avatars, page shell)
-components/…         forms, data-table, detail, dashboard, pipeline, analytics, settings
+components/…         forms, data-table, detail, dashboard, pipeline, analytics, notes, documents, settings
 db/                  schema, client, migrations, seed, backups
 electron/            desktop shell (main process)
 lib/domain.ts        enums, status transitions, default goals and rules: the single source of truth
+lib/dashboard-layout.ts  dashboard blocks, their options and layout repair
 lib/meta.ts          labels, icons and colors per status and activity type
-lib/services/        business rules, analytics, dashboard, review, backup (pure functions that take a db)
+lib/services/        business rules, analytics, dashboard, review, backup, logos, updates (pure functions that take a db)
 lib/actions/         server actions: validate with Zod, call a service, revalidate
 lib/queries/         server-only reads for pages
 scripts/             desktop install script
