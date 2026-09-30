@@ -3,7 +3,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
-import { and, eq, isNull } from "drizzle-orm";
+import { and, eq, isNull, ne } from "drizzle-orm";
 import { getDb } from "@/db/client";
 import * as s from "@/db/schema";
 import { UPLOAD_DIR } from "@/db/paths";
@@ -16,6 +16,7 @@ import {
   resumeSchema,
   savedViewSchema,
   settingsSchema,
+  timezoneSchema,
   templateSchema,
   textScaleSchema,
   colorThemeSchema,
@@ -47,6 +48,20 @@ export async function saveSettings(input: unknown) {
     const values = settingsSchema.parse(input);
     getDb().update(s.settings).set(values).where(eq(s.settings.id, 1)).run();
     return null;
+  });
+}
+
+/** Called by TimezoneSync with the browser's timezone; ignored once the user has picked one. */
+export async function syncTimezone(input: unknown) {
+  return run(() => {
+    const timezone = timezoneSchema.parse(input);
+    const db = getDb();
+    const changed = db
+      .update(s.settings)
+      .set({ timezone })
+      .where(and(eq(s.settings.id, 1), eq(s.settings.timezoneAuto, true), ne(s.settings.timezone, timezone)))
+      .run().changes;
+    return { changed: changed > 0 };
   });
 }
 

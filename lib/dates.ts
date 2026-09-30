@@ -8,7 +8,7 @@ import { fromZonedTime, toZonedTime } from "date-fns-tz";
  * the machine's local TZ.
  */
 
-export const DEFAULT_TZ = "Africa/Tunis";
+export const DEFAULT_TZ = "UTC";
 
 export function formatTz(date: Date | number, tz: string, pattern: string) {
   return formatInTimeZone(date, tz, pattern);

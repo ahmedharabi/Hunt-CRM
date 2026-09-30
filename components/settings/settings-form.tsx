@@ -3,12 +3,13 @@
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useMounted } from "@/hooks/use-mounted";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoaderCircle, Monitor, Moon, Sun } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import { FormField, applyServerErrors } from "@/components/shared/form-field";
 import { SelectField } from "@/components/shared/select-field";
 import { saveSettings } from "@/lib/actions/misc";
@@ -22,12 +23,14 @@ import { BackgroundSettings } from "./background-settings";
 import { ColorThemePicker } from "./color-theme-picker";
 import { TextSizeStepper } from "./text-size-stepper";
 
-const TIMEZONES = typeof Intl.supportedValuesOf === "function" ? Intl.supportedValuesOf("timeZone") : ["Africa/Tunis", "UTC"];
+const TIMEZONES = typeof Intl.supportedValuesOf === "function" ? Intl.supportedValuesOf("timeZone") : ["UTC"];
 const GOAL_TYPES: ActivityType[] = ["application", "cold_email", "linkedin_dm", "linkedin_connection", "follow_up", "referral_request", "call", "coffee_chat"];
 const STREAK_TYPES: ActivityType[] = ["application", "cold_email", "linkedin_dm", "linkedin_connection", "follow_up"];
 const RULE_TYPES: ActivityType[] = [...OUTREACH_TYPES, "follow_up"];
 
 type Input_ = z.input<typeof settingsSchema>;
+
+const browserTimezone = () => Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
 
 export function Section({ title, description, children, id }: { title: string; description?: string; children: React.ReactNode; id?: string }) {
   return (
@@ -46,10 +49,11 @@ export function SettingsForm({ settings }: { settings: Settings }) {
   const { theme: rawTheme, setTheme } = useTheme();
   const theme = useMounted() ? rawTheme : undefined;
   const fill = (m: Partial<Record<ActivityType, number>>) => Object.fromEntries(ACTIVITY_TYPES.map((t) => [t, m[t] ?? 0]));
-  const { control, handleSubmit, setError, formState, reset } = useForm<Input_, unknown, SettingsValues>({
+  const { control, handleSubmit, setError, setValue, formState, reset } = useForm<Input_, unknown, SettingsValues>({
     resolver: zodResolver(settingsSchema),
     defaultValues: {
       timezone: settings.timezone,
+      timezoneAuto: settings.timezoneAuto,
       weekStartsOn: settings.weekStartsOn,
       dailyGoals: fill(settings.dailyGoals),
       weeklyGoals: fill(settings.weeklyGoals),
@@ -61,7 +65,11 @@ export function SettingsForm({ settings }: { settings: Settings }) {
     },
   });
 
+  const timezoneAuto = useWatch({ control, name: "timezoneAuto" });
+
   const onSubmit = handleSubmit(async (values) => {
+    // Automatic always means "this browser's timezone now", whatever the field held.
+    if (values.timezoneAuto) values = { ...values, timezone: browserTimezone() };
     // Zero means "no goal / no reminder": drop those keys.
     const clean = (m: Record<string, number>) => Object.fromEntries(Object.entries(m).filter(([, v]) => v > 0));
     const r = await saveSettings({ ...values, dailyGoals: clean(values.dailyGoals), weeklyGoals: clean(values.weeklyGoals), followUpRules: clean(values.followUpRules), streakGoals: clean(values.streakGoals) });
@@ -153,12 +161,28 @@ export function SettingsForm({ settings }: { settings: Settings }) {
           <FormField control={control} name="timezone" label="Timezone">
             {({ field, id, invalid }) => (
               <>
-                <Input id={id} list="settings-tz" {...field} aria-invalid={invalid} className="h-9" />
+                <Input id={id} list="settings-tz" {...field} readOnly={timezoneAuto} aria-invalid={invalid} className={cn("h-9", timezoneAuto && "text-muted-foreground")} />
                 <datalist id="settings-tz">
                   {TIMEZONES.map((tz) => (
                     <option key={tz} value={tz} />
                   ))}
                 </datalist>
+                <FormField control={control} name="timezoneAuto">
+                  {({ field: auto, id: autoId }) => (
+                    <label htmlFor={autoId} className="flex items-center gap-2 text-[0.8125rem] text-muted-foreground">
+                      <Switch
+                        id={autoId}
+                        size="sm"
+                        checked={auto.value}
+                        onCheckedChange={(on) => {
+                          auto.onChange(on);
+                          if (on) setValue("timezone", browserTimezone(), { shouldDirty: true });
+                        }}
+                      />
+                      Use this device&apos;s timezone
+                    </label>
+                  )}
+                </FormField>
               </>
             )}
           </FormField>

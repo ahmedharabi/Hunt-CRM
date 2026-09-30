@@ -311,6 +311,8 @@ export const settings = sqliteTable("settings", {
   id: integer("id").primaryKey(),
   ...timestamps,
   timezone: text("timezone").notNull().default("Africa/Tunis"),
+  /** Follow the browser's timezone (see TimezoneSync); off once the user picks one. */
+  timezoneAuto: integer("timezone_auto", { mode: "boolean" }).notNull().default(true),
   /** 0 = Sunday … 6 = Saturday */
   weekStartsOn: integer("week_starts_on").notNull().default(1),
   dailyGoals: text("daily_goals", { mode: "json" })

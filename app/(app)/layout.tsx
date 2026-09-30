@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SiteHeader } from "@/components/layout/site-header";
+import { TimezoneSync } from "@/components/layout/timezone-sync";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { PrefsProvider } from "@/components/providers/prefs";
 import { LookupsProvider } from "@/components/providers/lookups";
@@ -28,6 +29,7 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
 
   return (
     <PrefsProvider value={{ timezone: settings.timezone, weekStartsOn: settings.weekStartsOn }}>
+      <TimezoneSync timezone={settings.timezone} auto={settings.timezoneAuto} />
       {/* Server-rendered so the saved text size applies on first paint. */}
       {textScale !== TEXT_SCALE.default && <style>{`html{font-size:${textScale}%}`}</style>}
       {themeCss && <style>{themeCss}</style>}

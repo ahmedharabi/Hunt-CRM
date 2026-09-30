@@ -13,7 +13,7 @@ let running: Promise<void> | null = null;
  * Uses SQLite's online backup API, which is safe while the DB is in WAL
  * mode and being written to — a plain file copy is not.
  */
-export function ensureDailyBackup(timezone = "Africa/Tunis"): Promise<void> {
+export function ensureDailyBackup(timezone = "UTC"): Promise<void> {
   const day = formatInTimeZone(new Date(), timezone, "yyyy-MM-dd");
   if (lastBackupDay === day) return Promise.resolve();
   running ??= (async () => {

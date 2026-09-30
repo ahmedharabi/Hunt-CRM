@@ -227,15 +227,18 @@ export const resumeSchema = z.object({
 // Partial: the form drops zero ("no goal") entries, and z.record over an enum requires every key.
 const goalMap = z.partialRecord(z.enum(ACTIVITY_TYPES), z.coerce.number().int().min(0).max(500));
 
+export const timezoneSchema = z.string().min(1).refine((tz) => {
+  try {
+    new Intl.DateTimeFormat("en", { timeZone: tz });
+    return true;
+  } catch {
+    return false;
+  }
+}, "Unknown timezone");
+
 export const settingsSchema = z.object({
-  timezone: z.string().refine((tz) => {
-    try {
-      new Intl.DateTimeFormat("en", { timeZone: tz });
-      return true;
-    } catch {
-      return false;
-    }
-  }, "Unknown timezone"),
+  timezone: timezoneSchema,
+  timezoneAuto: z.boolean().optional(),
   weekStartsOn: z.coerce.number().int().min(0).max(6),
   dailyGoals: goalMap,
   weeklyGoals: goalMap,

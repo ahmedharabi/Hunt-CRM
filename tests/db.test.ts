@@ -3,6 +3,7 @@ import { asc, eq, sql } from "drizzle-orm";
 import * as s from "@/db/schema";
 import { clearSeed, countRealRows, seed } from "@/db/seed-data";
 import { canTransition, DEFAULT_DAILY_GOALS } from "@/lib/domain";
+import { systemTimezone } from "@/db/client";
 import { testDb } from "./helpers";
 
 const NOW = new Date("2026-09-24T14:00:00Z");
@@ -11,7 +12,7 @@ describe("migrations", () => {
   it("creates the schema and a default settings row", () => {
     const db = testDb();
     const row = db.select().from(s.settings).get();
-    expect(row).toMatchObject({ id: 1, timezone: "Africa/Tunis", weekStartsOn: 1, ghostingThresholdDays: 21 });
+    expect(row).toMatchObject({ id: 1, timezone: systemTimezone(), timezoneAuto: true, weekStartsOn: 1, ghostingThresholdDays: 21 });
     expect(row?.dailyGoals).toEqual(DEFAULT_DAILY_GOALS);
   });
 

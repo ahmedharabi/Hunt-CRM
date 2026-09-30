@@ -6,6 +6,18 @@ import * as schema from "./schema";
 import { DATA_DIR, DB_PATH, MIGRATIONS_DIR } from "./paths";
 import { registerSqlFunctions } from "./sql-functions";
 
+/** The timezone of the machine running Hunt, or UTC if it has none or reports an unknown one. */
+export function systemTimezone() {
+  try {
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    if (tz) {
+      new Intl.DateTimeFormat("en", { timeZone: tz });
+      return tz;
+    }
+  } catch {}
+  return "UTC";
+}
+
 export type DB = BetterSQLite3Database<typeof schema> & { $client: Database.Database };
 
 /** Open a connection with the pragmas the app relies on, then apply pending migrations. */
@@ -20,7 +32,8 @@ export function createDb(file: string = DB_PATH): DB {
 
   const db = drizzle(sqlite, { schema });
   migrate(db, { migrationsFolder: MIGRATIONS_DIR });
-  sqlite.prepare("INSERT OR IGNORE INTO settings (id) VALUES (1)").run();
+  // Starts on this machine's timezone; TimezoneSync then switches it to the browser's.
+  sqlite.prepare("INSERT OR IGNORE INTO settings (id, timezone) VALUES (1, ?)").run(systemTimezone());
   return db;
 }
 
