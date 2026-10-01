@@ -48,6 +48,14 @@ export const TERMINAL_STATUSES = ["rejected", "ghosted", "withdrawn"] as const;
 export const OPPORTUNITY_STATUSES = [...ACTIVE_STATUSES, ...TERMINAL_STATUSES] as const;
 export type OpportunityStatus = (typeof OPPORTUNITY_STATUSES)[number];
 
+/** The statuses offered when changing one by hand: the pipeline board's columns. */
+export const PICKABLE_STATUSES = ["applied", "interviewing", "offer", "rejected"] as const satisfies readonly OpportunityStatus[];
+
+/** Pickable statuses, plus the current one if it's an older status, so it still shows. */
+export function statusChoices(current?: OpportunityStatus): OpportunityStatus[] {
+  return !current || (PICKABLE_STATUSES as readonly string[]).includes(current) ? [...PICKABLE_STATUSES] : [current, ...PICKABLE_STATUSES];
+}
+
 export const ACTIVITY_TYPES = [
   "application",
   "cold_email",

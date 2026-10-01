@@ -20,6 +20,7 @@ import { useLookups } from "@/components/providers/lookups";
 import { checkRoleDuplicates, saveCompany, saveOpportunity } from "@/lib/actions/records";
 import { opportunitySchema, type OpportunityInput, type OpportunityValues } from "@/lib/validators";
 import { EMPLOYMENT_META, REMOTE_META, SOURCE_META, STATUS_META, options } from "@/lib/meta";
+import { statusChoices } from "@/lib/domain";
 import { DuplicateWarning, FormSheet, Row } from "./form-sheet";
 
 const empty: OpportunityInput = {
@@ -30,7 +31,7 @@ const empty: OpportunityInput = {
   country: "",
   jobUrl: "",
   source: "",
-  status: "wishlist",
+  status: "applied",
   compensation: "",
   deadline: null,
   resumeVersionId: null,
@@ -169,7 +170,7 @@ export function OpportunityForm({
       )}
       <Row>
         <FormField control={control} name="status" label="Status">
-          {({ field, id: fid }) => <SelectField id={fid} value={field.value} onChange={field.onChange} options={options(STATUS_META)} />}
+          {({ field, id: fid }) => <SelectField id={fid} value={field.value} onChange={field.onChange} options={statusChoices(initial?.status).map((s) => ({ value: s, label: STATUS_META[s].label, color: STATUS_META[s].color }))} />}
         </FormField>
         <FormField control={control} name="employmentType" label="Type">
           {({ field, id: fid }) => <SelectField id={fid} value={field.value} onChange={field.onChange} options={options(EMPLOYMENT_META)} />}

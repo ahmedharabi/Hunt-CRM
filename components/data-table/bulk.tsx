@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { addTag, setOpportunityStatus } from "@/lib/actions/records";
 import { setOutcome } from "@/lib/actions/activities";
-import { OPPORTUNITY_STATUSES, ACTIVITY_OUTCOMES } from "@/lib/domain";
+import { PICKABLE_STATUSES, ACTIVITY_OUTCOMES } from "@/lib/domain";
 import { OUTCOME_META, STATUS_META } from "@/lib/meta";
 
 export function BulkTagButton({ entity, ids, onDone }: { entity: "companies" | "opportunities"; ids: number[]; onDone: () => void }) {
@@ -65,7 +65,7 @@ export function BulkStatusButton({ ids, onDone }: { ids: number[]; onDone: () =>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent side="top" className="w-44">
-        {OPPORTUNITY_STATUSES.map((s) => (
+        {PICKABLE_STATUSES.map((s) => (
           <DropdownMenuItem
             key={s}
             onSelect={async () => {

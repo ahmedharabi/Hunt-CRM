@@ -9,16 +9,15 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { setOpportunityStatus } from "@/lib/actions/records";
-import { ACTIVE_STATUSES, TERMINAL_STATUSES, canTransition, type OpportunityStatus } from "@/lib/domain";
+import { statusChoices, type OpportunityStatus } from "@/lib/domain";
 import { STATUS_META } from "@/lib/meta";
 import { cn } from "@/lib/utils";
 
-/** Status badge that opens a menu to move the opportunity; disallowed moves are greyed out. */
+/** Status badge that opens a menu to move the opportunity to any status. */
 export function StatusMenu({ opportunityId, status }: { opportunityId: number; status: OpportunityStatus }) {
   const router = useRouter();
   const [pending, start] = useTransition();
@@ -40,7 +39,7 @@ export function StatusMenu({ opportunityId, status }: { opportunityId: number; s
     });
 
   const item = (s: OpportunityStatus) => (
-    <DropdownMenuItem key={s} disabled={s !== current && !canTransition(current, s)} onSelect={() => s !== current && move(s)}>
+    <DropdownMenuItem key={s} onSelect={() => s !== current && move(s)}>
       <span className="size-2 rounded-full" style={{ backgroundColor: STATUS_META[s].color }} />
       {STATUS_META[s].label}
       {s === current && <Check className="ml-auto" />}
@@ -59,9 +58,7 @@ export function StatusMenu({ opportunityId, status }: { opportunityId: number; s
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-44">
         <DropdownMenuLabel className="text-xs text-muted-foreground">Move to</DropdownMenuLabel>
-        {ACTIVE_STATUSES.map(item)}
-        <DropdownMenuSeparator />
-        {TERMINAL_STATUSES.map(item)}
+        {statusChoices(status).map(item)}
       </DropdownMenuContent>
     </DropdownMenu>
   );

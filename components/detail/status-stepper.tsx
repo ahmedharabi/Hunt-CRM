@@ -9,14 +9,17 @@ import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { setOpportunityStatus } from "@/lib/actions/records";
-import { ACTIVE_STATUSES, TERMINAL_STATUSES, canTransition, isTerminal, type OpportunityStatus } from "@/lib/domain";
+import { ACTIVE_STATUSES, PICKABLE_STATUSES, isTerminal, type OpportunityStatus } from "@/lib/domain";
 import { STATUS_META } from "@/lib/meta";
 import { cn } from "@/lib/utils";
 
 /**
- * Pipeline stages as a clickable stepper. Only transitions allowed by the
- * rules are enabled; closing (reject/ghost/withdraw) lives in a menu.
+ * Pipeline stages as a clickable stepper; Rejected lives in a menu. The
+ * choices are the board's columns.
  */
+const STEPS = PICKABLE_STATUSES.filter((s) => !isTerminal(s));
+const CLOSING = PICKABLE_STATUSES.filter(isTerminal);
+
 export function StatusStepper({ opportunityId, status, reached }: { opportunityId: number; status: OpportunityStatus; reached: OpportunityStatus[] }) {
   const router = useRouter();
   const [pending, start] = useTransition();
@@ -42,10 +45,10 @@ export function StatusStepper({ opportunityId, status, reached }: { opportunityI
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
       <ol className="flex flex-1 items-center gap-1 overflow-x-auto" aria-label="Pipeline stage">
-        {ACTIVE_STATUSES.map((s, i) => {
-          const done = reached.includes(s) && (isTerminal(current) || i < currentIdx);
+        {STEPS.map((s) => {
+          const done = reached.includes(s) && (isTerminal(current) || (ACTIVE_STATUSES as readonly string[]).indexOf(s) < currentIdx);
           const isCurrent = s === current;
-          const allowed = canTransition(current, s);
+          const allowed = s !== current;
           const color = STATUS_META[s].color;
           const button = (
             <button
@@ -96,8 +99,8 @@ export function StatusStepper({ opportunityId, status, reached }: { opportunityI
           </Button>
         </PopoverTrigger>
         <PopoverContent align="end" className="w-64 space-y-1 p-1.5">
-          {TERMINAL_STATUSES.map((s) => {
-            const allowed = canTransition(current, s);
+          {CLOSING.map((s) => {
+            const allowed = s !== current;
             if (s === "rejected") {
               return (
                 <form
