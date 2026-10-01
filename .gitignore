@@ -42,3 +42,7 @@ next-env.d.ts
 
 # local database, backups, uploads
 /data
+
+# private planning notes
+/plan.md
+/monetization-plan.md
