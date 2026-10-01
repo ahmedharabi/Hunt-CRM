@@ -85,14 +85,21 @@ export function changeStatus(
   db: Tx,
   opportunityId: number,
   to: OpportunityStatus,
-  opts: { at?: Date; reason?: string | null; logApplication?: boolean } = {},
-) {
+  opts: { at?: Date; reason?: string | null; logApplication?: boolean; manual?: boolean } = {},
+): { from: OpportunityStatus; to: OpportunityStatus; changed: boolean } {
   const at = opts.at ?? new Date();
   const opp = db.select().from(s.opportunities).where(eq(s.opportunities.id, opportunityId)).get();
   if (!opp) throw new DomainError("Opportunity not found");
   const from = opp.status;
   if (from === to) return { from, to, changed: false };
-  if (!canTransition(from, to)) {
+  if (opts.manual) {
+    // The user can set any status by hand. Leaving the wishlist for a later
+    // stage still records the application, so applied dates and stats hold.
+    if (from === "wishlist" && to !== "applied" && to !== "withdrawn") {
+      changeStatus(db, opportunityId, "applied", { ...opts, reason: null });
+      return { ...changeStatus(db, opportunityId, to, opts), from };
+    }
+  } else if (!canTransition(from, to)) {
     throw new DomainError(`Can't move from ${from} to ${to}`);
   }
   const [{ top }] = db
@@ -488,13 +495,13 @@ export function addTagToOpportunities(db: Tx, opportunityIds: number[], name: st
 
 /**
  * Persist a column's order after a drag. If the card changed column, the
- * status change goes through `changeStatus` (validation + history).
+ * status change goes through `changeStatus` (history; any column is allowed).
  */
 export function moveCard(db: DB, opportunityId: number, to: OpportunityStatus, orderedIds: number[]) {
   return db.transaction((tx) => {
     const opp = tx.select().from(s.opportunities).where(eq(s.opportunities.id, opportunityId)).get();
     if (!opp) throw new DomainError("Opportunity not found");
-    const statusChange = opp.status !== to ? changeStatus(tx, opportunityId, to) : null;
+    const statusChange = opp.status !== to ? changeStatus(tx, opportunityId, to, { manual: true }) : null;
     orderedIds.forEach((id, position) => {
       tx.update(s.opportunities).set({ position }).where(eq(s.opportunities.id, id)).run();
     });

@@ -70,7 +70,16 @@ describe("status changes", () => {
     expect(advanceTo(db, opp.id, "applied")).toBeNull();
   });
 
-  it("moveCard changes status through the rules and persists order", () => {
+  it("manual changes can move to any status and still log the application", () => {
+    const opp = db.insert(s.opportunities).values({ companyId, title: "X" }).returning().get();
+    changeStatus(db, opp.id, "interviewing", { manual: true });
+    changeStatus(db, opp.id, "screening", { manual: true });
+    changeStatus(db, opp.id, "wishlist", { manual: true });
+    expect(history(opp.id)).toEqual(["wishlist→applied", "applied→interviewing", "interviewing→screening", "screening→wishlist"]);
+    expect(db.select().from(s.opportunities).where(eq(s.opportunities.id, opp.id)).get()!.appliedAt).not.toBeNull();
+  });
+
+  it("moveCard changes status and persists order", () => {
     const a = db.insert(s.opportunities).values({ companyId, title: "A", status: "applied" }).returning().get();
     const b = db.insert(s.opportunities).values({ companyId, title: "B", status: "screening" }).returning().get();
     moveCard(db, a.id, "screening", [a.id, b.id]);
@@ -79,7 +88,8 @@ describe("status changes", () => {
       ["A", "screening"],
       ["B", "screening"],
     ]);
-    expect(() => moveCard(db, a.id, "accepted", [a.id])).toThrow(DomainError);
+    moveCard(db, a.id, "applied", [a.id]);
+    expect(db.select().from(s.opportunities).where(eq(s.opportunities.id, a.id)).get()!.status).toBe("applied");
   });
 });
 

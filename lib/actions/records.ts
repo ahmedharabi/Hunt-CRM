@@ -81,8 +81,8 @@ export async function saveOpportunity(input: OpportunityInput, id?: number) {
       let row: s.Opportunity;
       if (id) {
         row = tx.update(s.opportunities).set(values).where(eq(s.opportunities.id, id)).returning().get();
-        // Status changes always go through the rules + history.
-        if (row.status !== status) changeStatus(tx, id, status, { reason: values.rejectionReason });
+        // Status changes always go through history.
+        if (row.status !== status) changeStatus(tx, id, status, { reason: values.rejectionReason, manual: true });
       } else {
         row = tx
           .insert(s.opportunities)
@@ -117,7 +117,7 @@ export async function setOpportunityStatus(ids: number[], status: string, reason
     db.transaction((tx) => {
       for (const id of idsSchema.parse(ids)) {
         try {
-          if (changeStatus(tx, id, target, { reason }).changed) changed++;
+          if (changeStatus(tx, id, target, { reason, manual: true }).changed) changed++;
         } catch (e) {
           failed.push(e instanceof Error ? e.message : String(e));
         }

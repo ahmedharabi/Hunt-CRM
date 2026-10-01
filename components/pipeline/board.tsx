@@ -10,16 +10,18 @@ import {
   PointerSensor,
   TouchSensor,
   closestCorners,
+  pointerWithin,
   useDroppable,
   useSensor,
   useSensors,
   type DragEndEvent,
   type DragOverEvent,
+  type CollisionDetection,
   type DragStartEvent,
 } from "@dnd-kit/core";
 import { SortableContext, arrayMove, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Ban, Plus, Search, SquareKanban } from "lucide-react";
+import { Plus, Search, SquareKanban } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,7 +31,7 @@ import { NextStep } from "@/components/shared/next-step";
 import { EmptyState } from "@/components/shared/empty-state";
 import { useAppActions } from "@/components/quick-log/app-actions";
 import { moveOpportunity } from "@/lib/actions/pipeline";
-import { ACTIVE_STATUSES, canTransition, type OpportunityStatus } from "@/lib/domain";
+import { ACTIVE_STATUSES, type OpportunityStatus } from "@/lib/domain";
 import { REMOTE_META, SOURCE_META, STATUS_META, TIER_META } from "@/lib/meta";
 import type { OpportunityRow } from "@/lib/queries/records";
 import { cn } from "@/lib/utils";
@@ -62,6 +64,18 @@ function toColumns(rows: OpportunityRow[]): Columns {
   }
   return cols;
 }
+
+/**
+ * Whatever is under the pointer wins, so a card dropped anywhere in a column
+ * lands there. Corner distance alone favours the cards of a long column over
+ * the column next to it.
+ */
+const collisions: CollisionDetection = (args) => {
+  const hits = pointerWithin(args);
+  if (!hits.length) return closestCorners(args);
+  const card = hits.find((h) => !(COLUMNS as readonly (string | number)[]).includes(h.id));
+  return card ? [card] : hits;
+};
 
 function findColumn(cols: Columns, id: number | string): Column | undefined {
   if (typeof id === "string" && (COLUMNS as readonly string[]).includes(id)) return id as Column;
@@ -106,7 +120,6 @@ export function PipelineBoard({ rows, now }: { rows: OpportunityRow[]; now: numb
     return true;
   };
 
-  const accepts = (col: Column) => origin !== null && (columnOf(origin) === col || canTransition(origin, col));
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
     useSensor(TouchSensor, { activationConstraint: { delay: 180, tolerance: 6 } }),
@@ -120,13 +133,12 @@ export function PipelineBoard({ rows, now }: { rows: OpportunityRow[]; now: numb
     snapshot.current = columns;
   };
 
-  // Move the card between columns live, but only into columns the rules allow.
+  // Move the card between columns live.
   const onDragOver = (e: DragOverEvent) => {
     if (!e.over || origin === null) return;
     const from = findColumn(columns, e.active.id);
     const to = findColumn(columns, e.over.id);
     if (!from || !to || from === to) return;
-    if (!accepts(to)) return;
     setColumns((prev) => {
       const id = Number(e.active.id);
       const target = prev[to].filter((x) => x !== id);
@@ -211,7 +223,7 @@ export function PipelineBoard({ rows, now }: { rows: OpportunityRow[]; now: numb
         </Button>
       </div>
 
-      <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={onDragStart} onDragOver={onDragOver} onDragEnd={onDragEnd} onDragCancel={() => {
+      <DndContext sensors={sensors} collisionDetection={collisions} onDragStart={onDragStart} onDragOver={onDragOver} onDragEnd={onDragEnd} onDragCancel={() => {
         if (snapshot.current) setColumns(snapshot.current);
         setActiveId(null);
         setOrigin(null);
@@ -219,8 +231,7 @@ export function PipelineBoard({ rows, now }: { rows: OpportunityRow[]; now: numb
         <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-4 md:mx-0 md:px-0">
           {BOARD.map((col) => {
             const ids = columns[col.status].filter(visible);
-            const blocked = origin !== null && !accepts(col.status);
-            return <BoardColumn key={col.status} status={col.status} label={col.label} ids={ids} byId={byId} now={now} blocked={blocked} dragging={origin !== null} />;
+            return <BoardColumn key={col.status} status={col.status} label={col.label} ids={ids} byId={byId} now={now} />;
           })}
         </div>
         <DragOverlay dropAnimation={{ duration: 180, easing: "cubic-bezier(0.2, 0, 0, 1)" }}>
@@ -228,7 +239,7 @@ export function PipelineBoard({ rows, now }: { rows: OpportunityRow[]; now: numb
         </DragOverlay>
       </DndContext>
       <p className="text-xs text-muted-foreground">
-        Drag cards between stages — moves follow the pipeline rules and are recorded in status history. Keyboard: focus a card, press Space, use arrows, Space again.
+        Drag cards between stages — moves are recorded in status history. Keyboard: focus a card, press Space, use arrows, Space again.
       </p>
     </div>
   );
@@ -240,18 +251,14 @@ function BoardColumn({
   ids,
   byId,
   now,
-  blocked,
-  dragging,
 }: {
   status: Column;
   label: string;
   ids: number[];
   byId: Map<number, OpportunityRow>;
   now: number;
-  blocked: boolean;
-  dragging: boolean;
 }) {
-  const { setNodeRef, isOver } = useDroppable({ id: status, disabled: blocked });
+  const { setNodeRef, isOver } = useDroppable({ id: status });
   const meta = STATUS_META[status];
   const terminal = status === "rejected";
   return (
@@ -261,15 +268,13 @@ function BoardColumn({
       className={cn(
         "flex w-[82vw] shrink-0 snap-start flex-col rounded-xl border bg-muted/30 transition-colors sm:w-72 lg:w-auto lg:min-w-0 lg:flex-1",
         terminal && "bg-muted/15",
-        blocked && "opacity-45",
-        isOver && !blocked && "border-foreground/25 bg-muted/60",
+        isOver && "border-foreground/25 bg-muted/60",
       )}
     >
       <header className="flex h-10 items-center gap-2 px-3">
         <span className="size-2 rounded-full" style={{ backgroundColor: meta.color }} />
         <h3 className="text-[0.8125rem] font-medium">{label}</h3>
         <span className="tabular text-xs text-muted-foreground">{ids.length}</span>
-        {blocked && dragging && <Ban className="ml-auto size-3.5 text-muted-foreground" aria-label="Not allowed from here" />}
       </header>
       <SortableContext items={ids} strategy={verticalListSortingStrategy}>
         <div className="flex min-h-24 flex-1 flex-col gap-2 px-2 pb-2">
@@ -279,7 +284,7 @@ function BoardColumn({
           })}
           {ids.length === 0 && (
             <div className="flex flex-1 items-center justify-center rounded-lg border border-dashed py-6 text-xs text-muted-foreground/70">
-              {blocked ? "Can't move here" : "Drop here"}
+              Drop here
             </div>
           )}
         </div>
