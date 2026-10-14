@@ -40,6 +40,8 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -61,6 +63,9 @@ export type Facet = {
   title: string;
   options: { value: string; label: string; color?: string; icon?: React.ReactNode }[];
 };
+
+/** A named ordering offered in the toolbar's sort menu. */
+export type SortOption = { label: string; sorting: SortingState };
 
 export type TableView = { id?: number; name: string; state: TableViewState; builtIn?: boolean };
 
@@ -84,6 +89,7 @@ export function DataTable<TData extends Record<string, unknown>>({
   views = [],
   defaultVisibility = {},
   defaultSorting = [],
+  sortOptions,
   getRowId,
   bulkActions,
   primaryAction,
@@ -101,6 +107,7 @@ export function DataTable<TData extends Record<string, unknown>>({
   views?: TableView[];
   defaultVisibility?: VisibilityState;
   defaultSorting?: SortingState;
+  sortOptions?: SortOption[];
   getRowId: (row: TData) => string;
   bulkActions?: (rows: TData[], clear: () => void) => React.ReactNode;
   primaryAction?: React.ReactNode;
@@ -235,6 +242,7 @@ export function DataTable<TData extends Record<string, unknown>>({
           </Button>
         )}
         <div className="ml-auto flex items-center gap-1.5">
+          {sortOptions && <SortMenu options={sortOptions} sorting={sorting} onChange={setSorting} />}
           <ViewsMenu views={views} active={activeView} onApply={applyView} onSave={() => setSaveOpen(true)} />
           <ColumnsMenu table={table} />
           <DropdownMenu>
@@ -590,6 +598,37 @@ function ViewsMenu({
           <Save />
           Save current view…
         </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+function SortMenu({ options, sorting, onChange }: { options: SortOption[]; sorting: SortingState; onChange: (s: SortingState) => void }) {
+  const key = (s: SortingState) => s.map((x) => `${x.id}:${x.desc ? "desc" : "asc"}`).join(",");
+  const current = options.find((o) => key(o.sorting) === key(sorting));
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" size="sm" className="h-8" aria-label="Sort">
+          <ArrowUpDown data-icon="inline-start" />
+          <span className="hidden sm:inline">{current?.label ?? "Custom sort"}</span>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-44">
+        <DropdownMenuLabel className="text-xs text-muted-foreground">Sort by</DropdownMenuLabel>
+        <DropdownMenuRadioGroup
+          value={current?.label ?? ""}
+          onValueChange={(label) => {
+            const o = options.find((x) => x.label === label);
+            if (o) onChange(o.sorting);
+          }}
+        >
+          {options.map((o) => (
+            <DropdownMenuRadioItem key={o.label} value={o.label}>
+              {o.label}
+            </DropdownMenuRadioItem>
+          ))}
+        </DropdownMenuRadioGroup>
       </DropdownMenuContent>
     </DropdownMenu>
   );
