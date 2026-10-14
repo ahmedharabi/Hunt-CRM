@@ -6,7 +6,7 @@ import { createColumnHelper } from "@tanstack/react-table";
 import { Briefcase, Copy, ExternalLink, MoreHorizontal, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { DataTable, SortHeader, selectColumn, type TableView } from "@/components/data-table/data-table";
+import { DataTable, SortHeader, selectColumn, type SortOption, type TableView } from "@/components/data-table/data-table";
 import { BulkStatusButton, BulkTagButton } from "@/components/data-table/bulk";
 import { iso } from "@/components/data-table/csv";
 import { CompanyAvatar } from "@/components/shared/company-avatar";
@@ -45,6 +45,14 @@ function similarRole(r: Row): Partial<OpportunityInput> {
     tags: r.tags,
   };
 }
+
+const NEWEST_FIRST = [{ id: "date", desc: true }];
+const SORT_OPTIONS: SortOption[] = [
+  { label: "Newest first", sorting: NEWEST_FIRST },
+  { label: "Oldest first", sorting: [{ id: "date", desc: false }] },
+  { label: "Status", sorting: [{ id: "status", desc: false }] },
+  { label: "Longest in stage", sorting: [{ id: "daysInStage", desc: true }] },
+];
 
 const BUILT_IN: TableView[] = [
   { name: "All opportunities", builtIn: true, state: {} },
@@ -101,6 +109,14 @@ export function OpportunitiesTable({ rows, views, now }: { rows: OpportunityRow[
           sortFn: "text",
           enableHiding: false,
           meta: { label: "Role" },
+        }),
+        // Hidden; backs the "Newest first" / "Oldest first" sort.
+        helper.accessor(appliedOrAdded, {
+          id: "date",
+          header: "Date",
+          sortFn: "basic",
+          enableHiding: false,
+          meta: { label: "Applied or added" },
         }),
         helper.accessor("status", {
           header: ({ column }) => <SortHeader column={column} title="Status" />,
@@ -247,8 +263,9 @@ export function OpportunitiesTable({ rows, views, now }: { rows: OpportunityRow[
         columns={columns}
         getRowId={(r) => String(r.id)}
         searchPlaceholder="Search roles, companies, tags…"
-        defaultVisibility={{ employmentType: false, compensation: false, resumeName: false, tags: false, deadline: false, workMode: false, excitement: false }}
-        defaultSorting={[{ id: "status", desc: false }]}
+        defaultVisibility={{ date: false, employmentType: false, compensation: false, resumeName: false, tags: false, deadline: false, workMode: false, excitement: false }}
+        defaultSorting={NEWEST_FIRST}
+        sortOptions={SORT_OPTIONS}
         facets={[
           { columnId: "status", title: "Status", options: options(STATUS_META) },
           { columnId: "companyTier", title: "Tier", options: options(TIER_META) },

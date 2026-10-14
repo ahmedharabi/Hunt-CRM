@@ -11,6 +11,7 @@ import { Kbd } from "@/components/ui/kbd";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { EntityCombobox } from "@/components/shared/entity-combobox";
+import { CountryCombobox } from "@/components/shared/country-combobox";
 import { SelectField } from "@/components/shared/select-field";
 import { DateTimeInput } from "@/components/shared/datetime-input";
 import { CompanyAvatar } from "@/components/shared/company-avatar";
@@ -436,13 +437,7 @@ export function QuickLogDialog({
                   <Label htmlFor="ql-country" className="text-[0.8125rem]">
                     Country <span className="font-normal text-muted-foreground">optional</span>
                   </Label>
-                  <Input
-                    id="ql-country"
-                    value={s.newOpportunityCountry}
-                    onChange={(e) => set({ newOpportunityCountry: e.target.value })}
-                    placeholder="Germany"
-                    className="h-9"
-                  />
+                  <CountryCombobox id="ql-country" value={s.newOpportunityCountry} onChange={(v) => set({ newOpportunityCountry: v })} />
                 </div>
               </div>
             )

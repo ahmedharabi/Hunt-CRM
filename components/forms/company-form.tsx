@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { FormField, applyServerErrors } from "@/components/shared/form-field";
 import { SelectField } from "@/components/shared/select-field";
 import { TagInput } from "@/components/shared/tag-input";
+import { CountryCombobox } from "@/components/shared/country-combobox";
 import { useLookups } from "@/components/providers/lookups";
 import { checkCompanyDuplicates, saveCompany } from "@/lib/actions/records";
 import { companySchema, type CompanyInput, type CompanyValues } from "@/lib/validators";
@@ -150,7 +151,7 @@ export function CompanyForm({
           {({ field, id: fid }) => <Input id={fid} {...field} value={field.value ?? ""} placeholder="Paris" className="h-9" />}
         </FormField>
         <FormField control={control} name="country" label="Country" optional>
-          {({ field, id: fid }) => <Input id={fid} {...field} value={field.value ?? ""} placeholder="France" className="h-9" />}
+          {({ field, id: fid }) => <CountryCombobox id={fid} value={field.value} onChange={field.onChange} />}
         </FormField>
       </Row>
       <FormField control={control} name="timezone" label="Timezone" optional description="Used to show their local time before you message.">

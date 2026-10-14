@@ -14,6 +14,7 @@ import { FormField, applyServerErrors } from "@/components/shared/form-field";
 import { SelectField } from "@/components/shared/select-field";
 import { EntityCombobox, MultiEntityCombobox } from "@/components/shared/entity-combobox";
 import { TagInput } from "@/components/shared/tag-input";
+import { CountryCombobox } from "@/components/shared/country-combobox";
 import { DateTimeInput } from "@/components/shared/datetime-input";
 import { CompanyAvatar } from "@/components/shared/company-avatar";
 import { useLookups } from "@/components/providers/lookups";
@@ -191,7 +192,7 @@ export function OpportunityForm({
       </Row>
       <Row>
         <FormField control={control} name="country" label="Country" optional>
-          {({ field, id: fid }) => <Input id={fid} {...field} value={field.value ?? ""} placeholder="Germany" className="h-9" />}
+          {({ field, id: fid }) => <CountryCombobox id={fid} value={field.value} onChange={field.onChange} />}
         </FormField>
         <FormField control={control} name="compensation" label="Stipend / salary" optional>
           {({ field, id: fid }) => <Input id={fid} {...field} value={field.value ?? ""} placeholder="€1,200/mo" className="h-9" />}
