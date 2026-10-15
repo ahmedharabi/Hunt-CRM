@@ -121,3 +121,12 @@ export const SIZE_OPTIONS = ["1-10", "11-50", "51-200", "201-1000", "1000+"].map
 export function options<K extends string>(meta: Record<K, { label: string; color?: string }>) {
   return (Object.keys(meta) as K[]).map((value) => ({ value, label: meta[value].label, color: meta[value].color }));
 }
+
+export const OUTREACH_STAGE_META: Record<import("./outreach").OutreachStage, { label: string; color: string }> = {
+  new: { label: "Not contacted", color: "var(--muted-foreground)" },
+  invited: { label: "Invited", color: "var(--status-wishlist)" },
+  connected: { label: "Connected", color: "var(--status-applied)" },
+  messaged: { label: "Messaged", color: "var(--status-screening)" },
+  replied: { label: "Replied", color: "var(--status-interviewing)" },
+  talking: { label: "In talks", color: "var(--status-accepted)" },
+};
