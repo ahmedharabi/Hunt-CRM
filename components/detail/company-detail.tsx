@@ -19,6 +19,11 @@ import { deleteWithUndo } from "@/lib/client/mutate";
 import { REMOTE_META } from "@/lib/meta";
 import type { CompanyRow, ContactRow, OpportunityRow, TimelineItem } from "@/lib/queries/records";
 import type { Company } from "@/db/schema";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { OutreachPeople } from "@/components/outreach/outreach-tree";
+import { CompanyGraph, StageLegend } from "@/components/outreach/outreach-graph";
+import { useOutreachView, ViewToggle } from "@/components/outreach/outreach-board";
+import type { OutreachCompany } from "@/lib/outreach";
 import { Panel, MetaItem, StatStrip } from "./parts";
 import { Timeline } from "./timeline";
 
@@ -27,13 +32,15 @@ type Props = {
   contacts: ContactRow[];
   opportunities: OpportunityRow[];
   timeline: TimelineItem[];
+  outreach: OutreachCompany;
   now: number;
 };
 
-export function CompanyDetail({ company, contacts, opportunities, timeline, now }: Props) {
+export function CompanyDetail({ company, contacts, opportunities, timeline, outreach, now }: Props) {
   const router = useRouter();
   const { quickLog, addContact, addOpportunity } = useAppActions();
   const [editing, setEditing] = useState(false);
+  const [view, setView] = useOutreachView();
 
   const acts = timeline.filter((t) => t.kind === "activity");
   const sent = acts.filter((a) => a.kind === "activity" && a.direction === "outbound").length;
@@ -125,10 +132,30 @@ export function CompanyDetail({ company, contacts, opportunities, timeline, now 
       />
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
-        <section className="min-w-0 rounded-xl border bg-card p-4 md:p-5">
-          <h3 className="mb-4 text-[0.8125rem] font-medium">Timeline</h3>
-          <Timeline items={timeline} now={now} show={{ contact: true, opportunity: true }} />
-        </section>
+        <Tabs defaultValue={contacts.length ? "outreach" : "timeline"} className="min-w-0 gap-3">
+          <div className="flex items-center justify-between gap-2">
+            <TabsList>
+              <TabsTrigger value="outreach">Outreach · {contacts.length}</TabsTrigger>
+              <TabsTrigger value="timeline">Timeline</TabsTrigger>
+            </TabsList>
+            <ViewToggle view={view} onChange={setView} />
+          </div>
+          <TabsContent value="outreach" className="space-y-3">
+            {view === "graph" ? (
+              <>
+                {outreach.people.length > 0 && <StageLegend />}
+                <CompanyGraph company={outreach} now={now} linkCompany={false} />
+              </>
+            ) : (
+              <div className="overflow-hidden rounded-xl border bg-card [&>ul]:border-t-0">
+                <OutreachPeople company={outreach} now={now} />
+              </div>
+            )}
+          </TabsContent>
+          <TabsContent value="timeline" className="rounded-xl border bg-card p-4 md:p-5">
+            <Timeline items={timeline} now={now} show={{ contact: true, opportunity: true }} />
+          </TabsContent>
+        </Tabs>
 
         <aside className="space-y-4">
           <Panel
@@ -153,34 +180,6 @@ export function CompanyDetail({ company, contacts, opportunities, timeline, now 
               </ul>
             ) : (
               <p className="px-4 py-4 text-sm text-muted-foreground">No roles tracked here yet.</p>
-            )}
-          </Panel>
-
-          <Panel
-            title={`People · ${contacts.length}`}
-            action={
-              <Button variant="ghost" size="icon-xs" onClick={() => addContact({ companyId: company.id })} aria-label="Add contact">
-                <Plus />
-              </Button>
-            }
-            bodyClassName="p-0"
-          >
-            {contacts.length ? (
-              <ul className="divide-y">
-                {contacts.map((c) => (
-                  <li key={c.id}>
-                    <Link href={`/contacts/${c.id}`} className="flex items-center justify-between gap-3 px-4 py-2.5 hover:bg-muted/50">
-                      <span className="min-w-0">
-                        <span className="block truncate text-[0.8125rem] font-medium">{c.name}</span>
-                        {c.role && <span className="block truncate text-xs text-muted-foreground">{c.role}</span>}
-                      </span>
-                      <RelativeTime value={c.lastContactedAt} now={now} className="shrink-0 text-xs text-muted-foreground" />
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="px-4 py-4 text-sm text-muted-foreground">No one here yet. Recruiters and engineers you reach out to will appear here.</p>
             )}
           </Panel>
 
